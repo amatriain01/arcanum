@@ -124,7 +124,7 @@ function BibliotecaNavegador({ navigation }) {
         name="BibliotecaNavegador"
         component={Falso}
         options={{
-          title: "Listado de libros",
+          title: "Biblioteca",
         }}
       />
       <Stack.Screen
@@ -175,7 +175,7 @@ function PerfilNavegador({ navigation }) {
   );
 }
 
-function EventosNavegador() {
+function EventosNavegador({navigation}) {
     return (
       <Stack.Navigator
         initialRouteName="EventosNavegador"
