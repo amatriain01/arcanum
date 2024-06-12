@@ -13,6 +13,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Icon } from "@rneui/themed";
 import { colorAmarillo, colorAmarilloClaro, colorAzul } from "../app.config";
+import Inicio from "./InicioComponent";
 
 function CustomDrawerContent(props) {
   return (
@@ -61,7 +62,7 @@ function InicioNavegador({ navigation }) {
       }}>
       <Stack.Screen
         name="InicioNavegador"
-        component={Falso}
+        component={Inicio}
         options={{
           title: "Arcanum",
         }}
