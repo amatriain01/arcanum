@@ -3,15 +3,23 @@ import Constants from "expo-constants";
 import React from "react";
 import { Platform, StyleSheet, Text, View } from "react-native";
 import Falso from "./FalsoComponent";
+import Login from "./LoginComponent";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { DrawerActions, NavigationContainer } from "@react-navigation/native";
-import {
-  createDrawerNavigator,
-  DrawerContentScrollView,
-  DrawerItemList,
-} from "@react-navigation/drawer";
+import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList } from "@react-navigation/drawer";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Icon } from "@rneui/themed";
+import { connect } from "react-redux";
+import { checkAuthState, logoutUser } from "../redux/actions/autenticacion";
+
+const mapStateToProps = state => ({
+  autenticacion: state.autenticacion,
+});
+
+const mapDispatchToProps = dispatch => ({
+  checkAuthState: () => dispatch(checkAuthState()),
+  logoutUser: () => dispatch(logoutUser()),
+});
 
 function CustomDrawerContent(props) {
   return (
@@ -84,7 +92,7 @@ function LoginNavegador({ navigation }) {
       }}>
       <Stack.Screen
         name="LoginNavegador"
-        component={Falso}
+        component={Login}
         options={{
           title: "Inicio de sesión",
         }}
@@ -175,35 +183,65 @@ function PerfilNavegador({ navigation }) {
   );
 }
 
-function EventosNavegador({navigation}) {
-    return (
-      <Stack.Navigator
-        initialRouteName="EventosNavegador"
-        screenOptions={{
-          headerMode: "screen",
-          headerTintColor: "white",
-          headerTitleAlign: "center",
-          headerStyle: { backgroundColor: "blue" },
-          headerTitleStyle: { color: "white" },
-          headerLeft: () => (
-            <Icon
-              name="menu"
-              size={28}
-              color="white"
-              onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
-            />
-          ),
-        }}>
-        <Stack.Screen
-          name="EventosNavegador"
-          component={Falso}
-          options={{
-            title: "Inicio",
-          }}
-        />
-      </Stack.Navigator>
-    );
-  }
+function LogoutNavegador({ navigation }) {
+  return (
+    <Stack.Navigator
+      initialRouteName="LogoutNavegador"
+      screenOptions={{
+        headerMode: "screen",
+        headerTintColor: "white",
+        headerTitleAlign: "center",
+        headerStyle: { backgroundColor: "blue" },
+        headerTitleStyle: { color: "white" },
+        headerLeft: () => (
+          <Icon
+            name="menu"
+            size={28}
+            color="white"
+            onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
+          />
+        ),
+      }}>
+      <Stack.Screen
+        name="LogoutNavegador"
+        component={Falso}
+        options={{
+          title: "Cerrar sesión",
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function EventosNavegador({ navigation }) {
+  return (
+    <Stack.Navigator
+      initialRouteName="EventosNavegador"
+      screenOptions={{
+        headerMode: "screen",
+        headerTintColor: "white",
+        headerTitleAlign: "center",
+        headerStyle: { backgroundColor: "blue" },
+        headerTitleStyle: { color: "white" },
+        headerLeft: () => (
+          <Icon
+            name="menu"
+            size={28}
+            color="white"
+            onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
+          />
+        ),
+      }}>
+      <Stack.Screen
+        name="EventosNavegador"
+        component={Falso}
+        options={{
+          title: "Inicio",
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
 
 function DrawerNavegador() {
   return (
@@ -226,20 +264,11 @@ function DrawerNavegador() {
         }}
       />
       <Drawer.Screen
-        name="Iniciar Sesion"
+        name="Iniciar Sesión"
         component={LoginNavegador}
         options={{
           drawerIcon: ({ tintColor }) => (
             <Icon name="user" type="font-awesome" size={24} color={tintColor} />
-          ),
-        }}
-      />
-      <Drawer.Screen
-        name="Biblioteca"
-        component={BibliotecaNavegador}
-        options={{
-          drawerIcon: ({ tintColor }) => (
-            <Icon name="book" type="font-awesome" size={24} color={tintColor} />
           ),
         }}
       />
@@ -258,12 +287,35 @@ function DrawerNavegador() {
         }}
       />
       <Drawer.Screen
+        name="Biblioteca"
+        component={BibliotecaNavegador}
+        options={{
+          drawerIcon: ({ tintColor }) => (
+            <Icon name="book" type="font-awesome" size={24} color={tintColor} />
+          ),
+        }}
+      />
+      <Drawer.Screen
         name="Eventos"
         component={EventosNavegador}
         options={{
           drawerIcon: ({ tintColor }) => (
             <Icon
               name="bullhorn"
+              type="font-awesome"
+              size={24}
+              color={tintColor}
+            />
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="Cerrar Sesión"
+        component={LogoutNavegador}
+        options={{
+          drawerIcon: ({ tintColor }) => (
+            <Icon
+              name="sign-out"
               type="font-awesome"
               size={24}
               color={tintColor}
@@ -316,4 +368,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Arcanum;
+export default connect(mapStateToProps, mapDispatchToProps)(Arcanum);

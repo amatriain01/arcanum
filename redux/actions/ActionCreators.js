@@ -1,19 +1,5 @@
 import * as ActionTypes from './ActionTypes';
-import { baseDatosUrl } from '../app.config';
-
-export const addUsuario = (userId) => ({
-    type: ActionTypes.ADD_USUARIO,
-    payload: userId,
-});
-
-export const login = (userId) => ({
-    type: ActionTypes.LOGIN,
-    payload: userId,
-});
-
-export const logout = () => ({
-    type: ActionTypes.LOGOUT,
-});
+import 'firebase/auth';
 
 export const fetchLibros = () => (dispatch) => {
 
@@ -167,9 +153,9 @@ export const addEventos = (eventos) => ({
 });
 
 
-export const addToPendiente = (libroId) => ({
+export const addToPendiente = (libroId, estado) => ({
     type: ActionTypes.ADD_TO_PENDIENTE,
-    payload: libroId,
+    payload: libroId, estado,
 });
 
 export const moveToPendiente = (libroId) => ({
