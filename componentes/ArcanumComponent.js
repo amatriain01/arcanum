@@ -1,7 +1,7 @@
 import { Component } from "react";
 import Constants from "expo-constants";
 import React from "react";
-import { Platform, StyleSheet, Text, View } from "react-native";
+import { Image, Platform, StyleSheet, Text, View } from "react-native";
 import Falso from "./FalsoComponent";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { DrawerActions, NavigationContainer } from "@react-navigation/native";
@@ -12,6 +12,7 @@ import {
 } from "@react-navigation/drawer";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Icon } from "@rneui/themed";
+import { colorAmarillo, colorAmarilloClaro, colorAzul } from "../app.config";
 
 function CustomDrawerContent(props) {
   return (
@@ -20,6 +21,12 @@ function CustomDrawerContent(props) {
         style={styles.container}
         forceInset={{ top: "always", horizontal: "never" }}>
         <View style={styles.drawerHeader}>
+          <View style={{ flex: 1 }}>
+            <Image
+              source={require("./imagenes/logo.png")}
+              style={styles.drawerImage}
+            />
+          </View>
           <View style={{ flex: 2 }}>
             <Text style={styles.drawerHeaderText}> Arcanum</Text>
           </View>
@@ -39,15 +46,15 @@ function InicioNavegador({ navigation }) {
       initialRouteName="InicioNavegador"
       screenOptions={{
         headerMode: "screen",
-        headerTintColor: "white",
+        headerTintColor: colorAmarillo,
         headerTitleAlign: "center",
-        headerStyle: { backgroundColor: "blue" },
-        headerTitleStyle: { color: "white" },
+        headerStyle: { backgroundColor: colorAzul },
+        headerTitleStyle: { color: colorAmarillo },
         headerLeft: () => (
           <Icon
             name="menu"
             size={28}
-            color="white"
+            color={colorAmarillo}
             onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
           />
         ),
@@ -69,15 +76,15 @@ function LoginNavegador({ navigation }) {
       initialRouteName="LoginNavegador"
       screenOptions={{
         headerMode: "screen",
-        headerTintColor: "white",
+        headerTintColor: colorAmarillo,
         headerTitleAlign: "center",
-        headerStyle: { backgroundColor: "blue" },
-        headerTitleStyle: { color: "white" },
+        headerStyle: { backgroundColor: colorAzul },
+        headerTitleStyle: { color: colorAmarillo },
         headerLeft: () => (
           <Icon
             name="menu"
             size={28}
-            color="white"
+            color={colorAmarillo}
             onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
           />
         ),
@@ -107,15 +114,15 @@ function BibliotecaNavegador({ navigation }) {
       initialRouteName="BibliotecaNavegador"
       screenOptions={{
         headerMode: "screen",
-        headerTintColor: "white",
+        headerTintColor: colorAmarillo,
         headerTitleAlign: "center",
-        headerStyle: { backgroundColor: "blue" },
-        headerTitleStyle: { color: "white" },
+        headerStyle: { backgroundColor: colorAzul },
+        headerTitleStyle: { color: colorAmarillo },
         headerLeft: () => (
           <Icon
             name="menu"
             size={28}
-            color="white"
+            color={colorAmarillo}
             onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
           />
         ),
@@ -151,15 +158,15 @@ function PerfilNavegador({ navigation }) {
       initialRouteName="PerfilNavegador"
       screenOptions={{
         headerMode: "screen",
-        headerTintColor: "white",
+        headerTintColor: colorAmarillo,
         headerTitleAlign: "center",
-        headerStyle: { backgroundColor: "blue" },
-        headerTitleStyle: { color: "white" },
+        headerStyle: { backgroundColor: colorAzul },
+        headerTitleStyle: { color: colorAmarillo },
         headerLeft: () => (
           <Icon
             name="menu"
             size={28}
-            color="white"
+            color={colorAmarillo}
             onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
           />
         ),
@@ -175,35 +182,35 @@ function PerfilNavegador({ navigation }) {
   );
 }
 
-function EventosNavegador({navigation}) {
-    return (
-      <Stack.Navigator
-        initialRouteName="EventosNavegador"
-        screenOptions={{
-          headerMode: "screen",
-          headerTintColor: "white",
-          headerTitleAlign: "center",
-          headerStyle: { backgroundColor: "blue" },
-          headerTitleStyle: { color: "white" },
-          headerLeft: () => (
-            <Icon
-              name="menu"
-              size={28}
-              color="white"
-              onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
-            />
-          ),
-        }}>
-        <Stack.Screen
-          name="EventosNavegador"
-          component={Falso}
-          options={{
-            title: "Inicio",
-          }}
-        />
-      </Stack.Navigator>
-    );
-  }
+function EventosNavegador({ navigation }) {
+  return (
+    <Stack.Navigator
+      initialRouteName="EventosNavegador"
+      screenOptions={{
+        headerMode: "screen",
+        headerTintColor: colorAmarillo,
+        headerTitleAlign: "center",
+        headerStyle: { backgroundColor: colorAzul },
+        headerTitleStyle: { color: colorAmarillo },
+        headerLeft: () => (
+          <Icon
+            name="menu"
+            size={28}
+            color={colorAmarillo}
+            onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
+          />
+        ),
+      }}>
+      <Stack.Screen
+        name="EventosNavegador"
+        component={Falso}
+        options={{
+          title: "Eventos",
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
 
 function DrawerNavegador() {
   return (
@@ -213,7 +220,7 @@ function DrawerNavegador() {
       screenOptions={{
         headerShown: false,
         drawerStyle: {
-          backgroundColor: "white",
+          backgroundColor: colorAmarilloClaro,
         },
       }}>
       <Drawer.Screen
@@ -297,22 +304,22 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   drawerHeader: {
-    backgroundColor: "blue",
-    height: 100,
+    backgroundColor: colorAzul,
+    height: 80,
     alignItems: "center",
     justifyContent: "center",
     flex: 1,
     flexDirection: "row",
   },
   drawerHeaderText: {
-    color: "white",
+    color: colorAmarillo,
     fontSize: 24,
     fontWeight: "bold",
   },
   drawerImage: {
     margin: 10,
-    width: 80,
-    height: 60,
+    width: 40,
+    height: 40,
   },
 });
 
