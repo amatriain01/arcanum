@@ -1,6 +1,6 @@
 import * as ActionTypes from './ActionTypes';
 import { auth } from '../../firebaseConfig';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from 'firebase/auth';
 
 const extractUserData = (user) => ({
     uid: user.uid,
@@ -9,11 +9,14 @@ const extractUserData = (user) => ({
     photoURL: user.photoURL,
 });
 
-export const registerUser = (email, password) => {
+export const registerUser = (nombre, apellido, email, password) => {
     return async (dispatch) => {
         dispatch({ type: ActionTypes.REGISTER_LOADING });
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            await updateProfile(userCredential.user, {
+                displayName: `${nombre} ${apellido}`
+            });
             const userData = extractUserData(userCredential.user);
             dispatch({ type: ActionTypes.REGISTER_SUCCESS, payload: userData });
         } catch (error) {

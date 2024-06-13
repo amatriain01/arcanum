@@ -2,9 +2,9 @@ import { Icon } from "@rneui/base";
 import React, { Component } from "react";
 import { Image, View, StyleSheet, Text } from "react-native";
 import { Input, Button } from "react-native-elements";
-import { checkAuthState, loginUser, clearError } from "../redux/actions/autenticacion";
 import { connect } from "react-redux";
 import { colorAmarilloClaro, colorAzulClaro } from "../app.config";
+import { checkAuthState, loginUser, clearError } from "../redux/actions/autenticacion";
 
 const mapStateToProps = (state) => ({
   loading: state.autenticacion.loading,
@@ -30,11 +30,21 @@ class Login extends Component {
 
   componentDidMount() {
     this.props.checkAuthState();
+    this.focusListener = this.props.navigation.addListener('focus', () => {
+      this.resetForm();
+      this.volverInicio();
+      this.props.checkAuthState();
+    });
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.isAuthenticated !== this.props.isAuthenticated) {
+      this.volverInicio();
+    }
   }
 
   componentWillUnmount() {
-    this.resetForm();
-    this.props.clearError();
+    this.focusListener();
   }
 
   handleEmailChange = (email) => {
@@ -45,9 +55,27 @@ class Login extends Component {
     this.setState({ password });
   };
 
+  volverInicio() {
+    if (this.props.isAuthenticated) {
+      const { navigation } = this.props;
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Inicio" }],
+      });
+    }
+  }
+
   resetForm() {
+    this.props.clearError();
     this.setState({
       email: "",
+      password: "",
+    });
+  }
+
+  resetPassword() {
+    this.props.clearError();
+    this.setState({
       password: "",
     });
   }
@@ -55,16 +83,16 @@ class Login extends Component {
   handleLogin() {
     const { email, password } = this.state;
     this.props.loginUser(email, password);
-    this.resetForm();
+    this.resetPassword();
   }
 
   render() {
     const { email, password } = this.state;
-    const { loading, error, isAuthenticated } = this.props;
+    const { loading, error } = this.props;
     const { navigate } = this.props.navigation;
 
     if (error) {
-      console.error('Error:', error);
+      console.log('Error:', error);
     }
 
     return (
@@ -98,11 +126,6 @@ class Login extends Component {
                 Fallo al iniciar sesión, inténtelo de nuevo.
               </Text>
             )}
-            {isAuthenticated && (
-              <Text style={styles.authenticatedText}>
-                Autenticado con éxito
-              </Text>
-            )}
           </View>
           <View style={styles.fila}>
             <Button
@@ -111,7 +134,7 @@ class Login extends Component {
               disabled={loading}
             />
             <Button
-              title={loading ? "Cargando..." : "Registrarse"}
+              title={"Registrarse"}
               type="clear"
               onPress={() => navigate("Registro")}
               disabled={loading}

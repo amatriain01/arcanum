@@ -1,8 +1,22 @@
 import { Icon } from "@rneui/base";
 import { Component } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Text } from "react-native";
 import { Button, Input } from "react-native-elements";
 import { colorAzulClaro, colorAmarilloClaro } from "../app.config";
+import { connect } from "react-redux";
+import { checkAuthState, registerUser, clearError } from "../redux/actions/autenticacion";
+
+const mapStateToProps = (state) => ({
+  loading: state.autenticacion.loading,
+  error: state.autenticacion.error,
+  isAuthenticated: state.autenticacion.isAuthenticated,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  registerUser: (nombre, apellido, email, password) => dispatch(registerUser(nombre, apellido, email, password)),
+  checkAuthState: () => dispatch(checkAuthState()),
+  clearError: () => dispatch(clearError()),
+});
 
 class Registro extends Component {
   constructor(props) {
@@ -14,9 +28,29 @@ class Registro extends Component {
       password: "",
       password2: "",
     };
+    this.handleRegister = this.handleRegister.bind(this);
   }
 
-  handlenNameChange = (nombre) => {
+  componentDidMount() {
+    this.props.checkAuthState();
+    this.focusListener = this.props.navigation.addListener('focus', () => {
+      this.resetForm();
+      this.volverInicio();
+      this.props.checkAuthState();
+    });
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.isAuthenticated !== this.props.isAuthenticated) {
+      this.volverInicio();
+    }
+  }
+
+  componentWillUnmount() {
+    this.focusListener();
+  }
+
+  handleNombreChange = (nombre) => {
     this.setState({ nombre });
   };
 
@@ -36,25 +70,69 @@ class Registro extends Component {
     this.setState({ password2 });
   };
 
+  volverInicio() {
+    if (this.props.isAuthenticated) {
+      const { navigation } = this.props;
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Inicio" }],
+      });
+    }
+  }
+
   resetForm() {
+    this.props.clearError();
     this.setState({
       nombre: "",
       apellido: "",
       email: "",
       password: "",
       password2: "",
+      errorLocal: "",
     });
   }
 
-  handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(this.state);
-    this.resetForm();
-  };
+  resetPassword() {
+    this.props.clearError();
+    this.setState({
+      password: "",
+      password2: "",
+    });
+  }
+
+  handleRegister() {
+    const { nombre, apellido, email, password, password2 } = this.state;
+    let errorLocal = "";
+    if (!nombre || !apellido || !email || !password || !password2) {
+      errorLocal = "Todos los campos son obligatorios.";
+      this.setState({ errorLocal });
+      return;
+    }
+    else if (!email.includes("@") || !email.includes(".")) {
+      errorLocal = "El email no es válido.";
+      this.setState({ errorLocal });
+      return;
+    }
+    else if (password.length < 6) {
+      errorLocal = "La contraseña debe tener al menos 6 caracteres.";
+      this.setState({ errorLocal });
+      return;
+    }
+    else if (password !== password2) {
+      errorLocal = "Las contraseñas no coinciden.";
+      this.setState({ errorLocal });
+      return;
+    }
+    console.log('User:' + email + ' Password:' + password + ' Nombre:' + nombre + ' Apellido:' + apellido);
+    this.props.registerUser(nombre, apellido, email, password);
+    this.resetPassword();
+  }
 
   render() {
+    const { nombre, apellido, email, password, password2, errorLocal } = this.state;
+    const { loading, error } = this.props;
     const { navigate } = this.props.navigation;
-    const { loading, error, isAuthenticated } = this.props;
+
     return (
       <View style={styles.container}>
         <View style={styles.formContainer}>
@@ -63,24 +141,24 @@ class Registro extends Component {
               inputStyle={{ padding: 10 }}
               placeholder="Nombre"
               leftIcon={<Icon name="user" type="font-awesome" size={24} />}
-              value={this.state.nombre}
-              onChange={this.handlenNameChange}
+              value={nombre}
+              onChangeText={this.handleNombreChange}
             />
             <Input
               inputStyle={{ padding: 10 }}
               name="apellido"
               placeholder="Apellido"
               leftIcon={<Icon name="user" type="font-awesome" size={24} />}
-              value={this.state.apellido}
-              onChange={this.handleApellidoChange}
+              value={apellido}
+              onChangeText={this.handleApellidoChange}
             />
             <Input
               inputStyle={{ padding: 10 }}
               name="email"
               placeholder="Email"
               leftIcon={<Icon name="envelope" type="font-awesome" size={24} />}
-              value={this.state.email}
-              onChange={this.handleEmailChange}
+              value={email}
+              onChangeText={this.handleEmailChange}
               autoCapitalize="none"
             />
             <Input
@@ -88,9 +166,9 @@ class Registro extends Component {
               name="password"
               placeholder="Contraseña"
               leftIcon={<Icon name="lock" type="font-awesome" size={24} />}
-              value={this.state.password}
+              value={password}
               secureTextEntry
-              onChange={this.handlePasswordChange}
+              onChangeText={this.handlePasswordChange}
               autoCapitalize="none"
             />
             <Input
@@ -98,22 +176,27 @@ class Registro extends Component {
               name="password2"
               placeholder="Repite la contraseña"
               leftIcon={<Icon name="lock" type="font-awesome" size={24} />}
-              value={this.state.password}
+              value={password2}
               secureTextEntry
-              onChange={this.handlePassword2Change}
+              onChangeText={this.handlePassword2Change}
               autoCapitalize="none"
             />
           </View>
+          {(errorLocal || error) && (
+            <Text style={styles.errorText}>
+              {errorLocal || "Fallo al registrar el usuario, inténtelo de nuevo."}
+            </Text>
+          )}
           <View style={styles.fila}>
             <Button
-              title={loading ? "Cargando..." : "Iniciar Sesión"}
+              title={"Iniciar Sesión"}
               type="clear"
               onPress={() => navigate("LoginNavegador")}
               disabled={loading}
             />
             <Button
               title={loading ? "Cargando..." : "Registrarse"}
-              onPress={this.handleSubmit}
+              onPress={this.handleRegister}
               disabled={loading}
             />
           </View>
@@ -161,4 +244,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Registro;
+export default connect(mapStateToProps, mapDispatchToProps)(Registro);

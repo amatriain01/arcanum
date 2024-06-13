@@ -14,6 +14,7 @@ import Inicio from "./InicioComponent";
 import { connect } from "react-redux";
 import { checkAuthState, logoutUser } from "../redux/actions/autenticacion";
 import Registro from "./RegistroComponent";
+import Logout from "./LogoutComponent";
 
 const mapStateToProps = state => ({
   autenticacion: state.autenticacion,
@@ -213,7 +214,7 @@ function LogoutNavegador({ navigation }) {
       }}>
       <Stack.Screen
         name="LogoutNavegador"
-        component={Falso}
+        component={Logout}
         options={{
           title: "Cerrar sesión",
         }}
