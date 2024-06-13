@@ -1,14 +1,12 @@
 import { React, Component } from "react";
 import { ScrollView } from "react-native-gesture-handler";
-import {
-  colorAmarillo,
-  colorAmarilloClaro,
-  colorAzulClaro,
-} from "../app.config";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { Dimensions, FlatList, StyleSheet, Text, View } from "react-native";
+import { colorAmarillo } from "../app.config";
 import { Divider, Icon } from "@rneui/base";
 import LibroSimple from "./LibroSimpleComponent";
 import EventoSimple from "./EventoSimpleComponent";
+
+const { width: screenWidth } = Dimensions.get("window");
 
 const libros = [
   {
@@ -53,11 +51,23 @@ const eventos = [
 ];
 
 function renderLibro({ item }) {
-  return <LibroSimple libro={item} mostrarValidacion={true} />;
+  return (
+    <View style={styles.carousel}>
+      <LibroSimple
+        libro={item}
+        mostrarValidacion={true}
+        screenWidth={screenWidth}
+      />
+    </View>
+  );
 }
 
 function renderDiscusion({ item }) {
-  return <LibroSimple libro={item} mostrarValidacion={false} />;
+  return (
+    <View style={styles.carousel}>
+      <LibroSimple libro={item} mostrarValidacion={false} />
+    </View>
+  );
 }
 
 function renderEvento({ item }) {
@@ -69,7 +79,10 @@ function ListadoElementos(props) {
     <View style={styles.container}>
       <View style={styles.header}>
         <Icon name={props.icono} type="font-awesome" size={30} />
-        <Text style={{fontSize:20, fontWeight: "bold"}}> {props.titulo} </Text>
+        <Text style={{ fontSize: 20, fontWeight: "bold" }}>
+          {" "}
+          {props.titulo}{" "}
+        </Text>
       </View>
       <Divider />
       <FlatList
@@ -121,6 +134,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
+  },
+  carousel: {
+    width: screenWidth,
+    height: 300,
   },
 });
 
