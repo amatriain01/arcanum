@@ -53,7 +53,8 @@ export const checkAuthState = () => {
         try {
             onAuthStateChanged(auth, (user) => {
                 if (user) {
-                    dispatch({ type: ActionTypes.CHECK_AUTH_STATE_SUCCESS, payload: user });
+                    const userData = extractUserData(user);
+                    dispatch({ type: ActionTypes.CHECK_AUTH_STATE_SUCCESS, payload: userData });
                 } else {
                     dispatch({ type: ActionTypes.CHECK_AUTH_STATE_SUCCESS, payload: null });
                 }
