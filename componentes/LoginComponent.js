@@ -18,14 +18,18 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 class Login extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      email: "",
-      password: "",
-    };
-    this.handleLogin = this.handleLogin.bind(this);
-  }
+    constructor(props) {
+        super(props);
+        this.state = {
+            email: '',
+            password: '',
+        };
+        this.handleLogin = this.handleLogin.bind(this);
+    }
+
+    componentDidMount() {
+        this.props.checkAuthState();
+    }
 
   handleEmailChange = (email) => {
     this.setState({ email });
