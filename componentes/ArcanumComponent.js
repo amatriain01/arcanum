@@ -13,7 +13,7 @@ import { colorAmarillo, colorAmarilloClaro, colorAzul } from "../app.config";
 import Inicio from "./InicioComponent";
 import { connect } from "react-redux";
 import { checkAuthState, logoutUser } from "../redux/actions/autenticacion";
-import Registro from "./RegistroComponente";
+import Registro from "./RegistroComponent";
 
 const mapStateToProps = state => ({
   autenticacion: state.autenticacion,
