@@ -18,18 +18,32 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 class Login extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            email: '',
-            password: '',
-        };
-        this.handleLogin = this.handleLogin.bind(this);
-    }
+  constructor(props) {
+    super(props);
+    this.state = {
+      email: '',
+      password: '',
+      localError: null,
+    };
+    this.handleLogin = this.handleLogin.bind(this);
+  }
 
-    componentDidMount() {
-        this.props.checkAuthState();
+  componentDidMount() {
+    this.props.checkAuthState();
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.error !== this.props.error) {
+      this.setState({ localError: this.props.error });
+      if (this.props.error) {
+        console.error('Error: ', this.props.error);
+      }
     }
+  }
+
+  componentWillUnmount() {
+    this.setState({ localError: null });
+  }
 
   handleEmailChange = (email) => {
     this.setState({ email });
@@ -43,6 +57,7 @@ class Login extends Component {
     this.setState({
       email: "",
       password: "",
+      localError: null,
     });
   }
 
@@ -55,17 +70,17 @@ class Login extends Component {
   }
 
   render() {
-    const { email, password } = this.state;
-    const { loading, error, isAuthenticated } = this.props;
+    const { email, password, localError } = this.state;
+    const { loading, isAuthenticated } = this.props;
     const { navigate } = this.props.navigation;
 
     return (
       <View style={styles.container}>
         <View style={styles.formContainer}>
-            <Image
-              style={styles.image}
-              source={require("./imagenes/logo.png")}
-            />
+          <Image
+            style={styles.image}
+            source={require("./imagenes/logo.png")}
+          />
           <View style={styles.form}>
             <Input
               inputStyle={{ padding: 10 }}
@@ -85,7 +100,11 @@ class Login extends Component {
               onChangeText={this.handlePasswordChange}
               autoCapitalize="none"
             />
-            {error && <Text style={styles.errorText}>{error}</Text>}
+            {localError && (
+              <Text style={styles.errorText}>
+                Fallo al iniciar sesión, inténtelo de nuevo.
+              </Text>
+            )}
             {isAuthenticated && (
               <Text style={styles.authenticatedText}>
                 Autenticado con éxito
