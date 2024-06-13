@@ -1,9 +1,8 @@
 import React from "react";
 import { View, Text, Image, StyleSheet, Dimensions } from "react-native";
 import { FontAwesome } from "@expo/vector-icons"; // Importa el icono de estrella desde FontAwesome
-import { colorAmarilloClaro, colorAzulClaro } from "../app.config";
+import { colorAmarillo, colorAmarilloClaro, colorAzulClaro } from "../app.config";
 
-const { width: screenWidth } = Dimensions.get("window");
 
 const LibroSimple = ({ libro, mostrarValidacion }) => {
   const { imagen, titulo, autor } = libro;
@@ -31,16 +30,18 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    width: screenWidth,
-    height: 300,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
+    width: "100%",
+    height: "100%",
     paddingHorizontal: 10,
     backgroundColor: colorAmarilloClaro,
+    borderRadius: 10,
+    borderStyle: "solid",
+    borderWidth: 2,
+    borderColor: colorAmarillo,
   },
   imageContainer: {
     width: "50%",
-    height: 250,
+    height: "75%",
     marginRight: 10,
   },
   image: {

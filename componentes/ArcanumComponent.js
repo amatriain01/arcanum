@@ -15,6 +15,7 @@ import { connect } from "react-redux";
 import { checkAuthState, logoutUser } from "../redux/actions/autenticacion";
 import Registro from "./RegistroComponent";
 import Logout from "./LogoutComponent";
+import Biblioteca from "./BibliotecaComponent";
 
 const mapStateToProps = state => ({
   autenticacion: state.autenticacion,
@@ -84,7 +85,7 @@ function InicioNavegador({ navigation }) {
 function LoginNavegador({ navigation }) {
   return (
     <Stack.Navigator
-      initialRouteName="LoginNavegador"
+      initialRouteName="Login"
       screenOptions={{
         headerMode: "screen",
         headerTintColor: colorAmarillo,
@@ -101,7 +102,7 @@ function LoginNavegador({ navigation }) {
         ),
       }}>
       <Stack.Screen
-        name="LoginNavegador"
+        name="Login"
         component={Login}
         options={{
           title: "Inicio de sesión",
@@ -140,7 +141,7 @@ function BibliotecaNavegador({ navigation }) {
       }}>
       <Stack.Screen
         name="BibliotecaNavegador"
-        component={Falso}
+        component={Biblioteca}
         options={{
           title: "Biblioteca",
         }}
@@ -256,7 +257,7 @@ function EventosNavegador({ navigation }) {
 function DrawerNavegador() {
   return (
     <Drawer.Navigator
-      initialRouteName="Drawer"
+      initialRouteName="Inicio"
       drawerContent={(props) => <CustomDrawerContent {...props} />}
       screenOptions={{
         headerShown: false,
@@ -276,6 +277,7 @@ function DrawerNavegador() {
       <Drawer.Screen
         name="Iniciar Sesión"
         component={LoginNavegador}
+        initialParams={{ screen: 'Login' }}
         options={{
           drawerIcon: ({ tintColor }) => (
             <Icon name="user" type="font-awesome" size={24} color={tintColor} />
@@ -299,6 +301,7 @@ function DrawerNavegador() {
       <Drawer.Screen
         name="Biblioteca"
         component={BibliotecaNavegador}
+        initialParams={{ screen: 'BibliotecaNavegador' }}
         options={{
           drawerIcon: ({ tintColor }) => (
             <Icon name="book" type="font-awesome" size={24} color={tintColor} />
