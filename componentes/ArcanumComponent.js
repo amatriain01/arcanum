@@ -13,6 +13,7 @@ import { colorAmarillo, colorAmarilloClaro, colorAzul } from "../app.config";
 import Inicio from "./InicioComponent";
 import { connect } from "react-redux";
 import { checkAuthState, logoutUser } from "../redux/actions/autenticacion";
+import Registro from "./RegistroComponente";
 
 const mapStateToProps = state => ({
   autenticacion: state.autenticacion,
@@ -108,7 +109,7 @@ function LoginNavegador({ navigation }) {
 
       <Stack.Screen
         name="Registro"
-        component={Falso}
+        component={Registro}
         options={{
           title: "Registro",
         }}

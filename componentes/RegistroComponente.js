@@ -1,31 +1,28 @@
 import { Icon } from "@rneui/base";
-import React, { Component } from "react";
-import { Image, View, StyleSheet, Text } from "react-native";
-import { Input, Button } from "react-native-elements";
-import { checkAuthState, loginUser } from "../redux/actions/autenticacion";
-import { connect } from "react-redux";
-import { colorAmarilloClaro, colorAzulClaro } from "../app.config";
+import { Component } from "react";
+import { StyleSheet, View } from "react-native";
+import { Button, Input } from "react-native-elements";
+import { colorAzulClaro, colorAmarilloClaro } from "../app.config";
 
-const mapStateToProps = (state) => ({
-  loading: state.autenticacion.loading,
-  error: state.autenticacion.error,
-  isAuthenticated: state.autenticacion.isAuthenticated,
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  loginUser: (email, password) => dispatch(loginUser(email, password)),
-  checkAuthState: () => dispatch(checkAuthState()),
-});
-
-class Login extends Component {
+class Registro extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      nombre: "",
+      apellido: "",
       email: "",
       password: "",
+      password2: "",
     };
-    this.handleLogin = this.handleLogin.bind(this);
   }
+
+  handlenNameChange = (nombre) => {
+    this.setState({ nombre });
+  };
+
+  handleApellidoChange = (apellido) => {
+    this.setState({ apellido });
+  };
 
   handleEmailChange = (email) => {
     this.setState({ email });
@@ -35,69 +32,88 @@ class Login extends Component {
     this.setState({ password });
   };
 
+  handlePassword2Change = (password2) => {
+    this.setState({ password2 });
+  };
+
   resetForm() {
     this.setState({
+      nombre: "",
+      apellido: "",
       email: "",
       password: "",
+      password2: "",
     });
   }
 
-  handleLogin() {
-    const { email, password } = this.state;
-    console.log("Email:", email);
-    console.log("Password:", password);
-    this.props.loginUser(email, password);
+  handleSubmit = (e) => {
+    e.preventDefault();
+    console.log(this.state);
     this.resetForm();
-  }
+  };
 
   render() {
-    const { email, password } = this.state;
-    const { loading, error, isAuthenticated } = this.props;
     const { navigate } = this.props.navigation;
-
+    const { loading, error, isAuthenticated } = this.props;
     return (
       <View style={styles.container}>
         <View style={styles.formContainer}>
-            <Image
-              style={styles.image}
-              source={require("./imagenes/logo.png")}
-            />
           <View style={styles.form}>
             <Input
               inputStyle={{ padding: 10 }}
-              placeholder="Correo electrónico"
+              placeholder="Nombre"
+              leftIcon={<Icon name="user" type="font-awesome" size={24} />}
+              value={this.state.nombre}
+              onChange={this.handlenNameChange}
+            />
+            <Input
+              inputStyle={{ padding: 10 }}
+              name="apellido"
+              placeholder="Apellido"
+              leftIcon={<Icon name="user" type="font-awesome" size={24} />}
+              value={this.state.apellido}
+              onChange={this.handleApellidoChange}
+            />
+            <Input
+              inputStyle={{ padding: 10 }}
+              name="email"
+              placeholder="Email"
               leftIcon={<Icon name="envelope" type="font-awesome" size={24} />}
-              value={email}
+              value={this.state.email}
+              onChange={this.handleEmailChange}
               autoCapitalize="none"
-              onChangeText={this.handleEmailChange}
             />
             <Input
               inputStyle={{ padding: 10 }}
               name="password"
               placeholder="Contraseña"
               leftIcon={<Icon name="lock" type="font-awesome" size={24} />}
-              value={password}
+              value={this.state.password}
               secureTextEntry
-              onChangeText={this.handlePasswordChange}
+              onChange={this.handlePasswordChange}
               autoCapitalize="none"
             />
-            {error && <Text style={styles.errorText}>{error}</Text>}
-            {isAuthenticated && (
-              <Text style={styles.authenticatedText}>
-                Autenticado con éxito
-              </Text>
-            )}
+            <Input
+              inputStyle={{ padding: 10 }}
+              name="password2"
+              placeholder="Repite la contraseña"
+              leftIcon={<Icon name="lock" type="font-awesome" size={24} />}
+              value={this.state.password}
+              secureTextEntry
+              onChange={this.handlePassword2Change}
+              autoCapitalize="none"
+            />
           </View>
           <View style={styles.fila}>
             <Button
               title={loading ? "Cargando..." : "Iniciar Sesión"}
-              onPress={this.handleLogin}
+              type="clear"
+              onPress={() => navigate("LoginNavegador")}
               disabled={loading}
             />
             <Button
               title={loading ? "Cargando..." : "Registrarse"}
-              type="clear"
-              onPress={() => navigate("Registro")}
+              onPress={this.handleSubmit}
               disabled={loading}
             />
           </View>
@@ -106,7 +122,6 @@ class Login extends Component {
     );
   }
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -115,15 +130,11 @@ const styles = StyleSheet.create({
     backgroundColor: colorAzulClaro,
     justifyContent: "center",
   },
-  image: {
-    width: 100,
-    height: 100,
-  },
   formContainer: {
     justifyContent: "center",
     alignItems: "center",
     width: "100%",
-    paddingTop: 50,
+    paddingTop: 20,
     borderRadius: 10,
     borderStyle: "solid",
     borderWidth: 1,
@@ -150,4 +161,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Login);
+export default Registro;
