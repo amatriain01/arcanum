@@ -2,7 +2,7 @@ import { Icon } from "@rneui/base";
 import React, { Component } from "react";
 import { Image, View, StyleSheet, Text } from "react-native";
 import { Input, Button } from "react-native-elements";
-import { checkAuthState, loginUser } from "../redux/actions/autenticacion";
+import { checkAuthState, loginUser, clearError } from "../redux/actions/autenticacion";
 import { connect } from "react-redux";
 import { colorAmarilloClaro, colorAzulClaro } from "../app.config";
 
@@ -15,6 +15,7 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
   loginUser: (email, password) => dispatch(loginUser(email, password)),
   checkAuthState: () => dispatch(checkAuthState()),
+  clearError: () => dispatch(clearError()),
 });
 
 class Login extends Component {
@@ -23,7 +24,6 @@ class Login extends Component {
     this.state = {
       email: '',
       password: '',
-      localError: null,
     };
     this.handleLogin = this.handleLogin.bind(this);
   }
@@ -32,17 +32,9 @@ class Login extends Component {
     this.props.checkAuthState();
   }
 
-  componentDidUpdate(prevProps) {
-    if (prevProps.error !== this.props.error) {
-      this.setState({ localError: this.props.error });
-      if (this.props.error) {
-        console.error('Error: ', this.props.error);
-      }
-    }
-  }
-
   componentWillUnmount() {
-    this.setState({ localError: null });
+    this.resetForm();
+    this.props.clearError();
   }
 
   handleEmailChange = (email) => {
@@ -57,22 +49,23 @@ class Login extends Component {
     this.setState({
       email: "",
       password: "",
-      localError: null,
     });
   }
 
   handleLogin() {
     const { email, password } = this.state;
-    console.log("Email:", email);
-    console.log("Password:", password);
     this.props.loginUser(email, password);
     this.resetForm();
   }
 
   render() {
-    const { email, password, localError } = this.state;
-    const { loading, isAuthenticated } = this.props;
+    const { email, password } = this.state;
+    const { loading, error, isAuthenticated } = this.props;
     const { navigate } = this.props.navigation;
+
+    if (error) {
+      console.error('Error:', error);
+    }
 
     return (
       <View style={styles.container}>
@@ -100,7 +93,7 @@ class Login extends Component {
               onChangeText={this.handlePasswordChange}
               autoCapitalize="none"
             />
-            {localError && (
+            {error && (
               <Text style={styles.errorText}>
                 Fallo al iniciar sesión, inténtelo de nuevo.
               </Text>

@@ -52,6 +52,11 @@ export const autenticacion = (state = initialState, action) => {
                 loading: false,
                 error: null,
             };
+        case ActionTypes.CLEAR_ERROR:
+            return {
+                ...state,
+                error: null
+            };
         default:
             return state;
     }

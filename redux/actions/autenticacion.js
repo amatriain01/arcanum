@@ -64,3 +64,7 @@ export const checkAuthState = () => {
         }
     };
 };
+
+export const clearError = () => ({
+    type: ActionTypes.CLEAR_ERROR
+});
