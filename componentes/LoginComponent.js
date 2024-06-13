@@ -25,6 +25,10 @@ class Login extends Component {
         this.handleLogin = this.handleLogin.bind(this);
     }
 
+    componentDidMount() {
+        this.props.checkAuthState();
+    }
+
     handleEmailChange = email => {
         this.setState({ email });
     };
