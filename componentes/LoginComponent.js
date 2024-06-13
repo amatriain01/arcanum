@@ -29,6 +29,7 @@ class Login extends Component {
   }
 
   componentDidMount() {
+    this.props.clearError();
     this.props.checkAuthState();
     this.focusListener = this.props.navigation.addListener('focus', () => {
       this.resetForm();
@@ -181,10 +182,6 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: "red",
-    marginVertical: 10,
-  },
-  authenticatedText: {
-    color: "green",
     marginVertical: 10,
   },
 });

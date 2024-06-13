@@ -32,6 +32,7 @@ class Registro extends Component {
   }
 
   componentDidMount() {
+    this.props.clearError();
     this.props.checkAuthState();
     this.focusListener = this.props.navigation.addListener('focus', () => {
       this.resetForm();
@@ -71,7 +72,7 @@ class Registro extends Component {
   };
 
   volverInicio() {
-    if (this.props.isAuthenticated) {
+    if (this.props.isAuthenticated == false) {
       const { navigation } = this.props;
       navigation.reset({
         index: 0,
@@ -123,7 +124,6 @@ class Registro extends Component {
       this.setState({ errorLocal });
       return;
     }
-    console.log('User:' + email + ' Password:' + password + ' Nombre:' + nombre + ' Apellido:' + apellido);
     this.props.registerUser(nombre, apellido, email, password);
     this.resetPassword();
   }
@@ -236,10 +236,6 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: "red",
-    marginVertical: 10,
-  },
-  authenticatedText: {
-    color: "green",
     marginVertical: 10,
   },
 });

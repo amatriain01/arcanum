@@ -1,10 +1,9 @@
-import { Icon } from "@rneui/base";
 import React, { Component } from "react";
 import { Image, View, StyleSheet, Text } from "react-native";
-import { Input, Button } from "react-native-elements";
+import { Button } from "react-native-elements";
 import { connect } from "react-redux";
 import { colorAmarilloClaro, colorAzulClaro } from "../app.config";
-import { checkAuthState, loginUser, clearError, logoutUser } from "../redux/actions/autenticacion";
+import { clearError, logoutUser, checkAuthState } from "../redux/actions/autenticacion";
 
 const mapStateToProps = (state) => ({
     loading: state.autenticacion.loading,
@@ -13,65 +12,68 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-    loginUser: (email, password) => dispatch(loginUser(email, password)),
+    logoutUser: () => dispatch(logoutUser()),
     checkAuthState: () => dispatch(checkAuthState()),
     clearError: () => dispatch(clearError()),
-    logoutUser: () => dispatch(logoutUser()),
 });
 
 class Logout extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            email: '',
-            password: '',
+            showLogoutConfirmation: false,
         };
-        this.handleLogin = this.handleLogin.bind(this);
+        this.handleLogout = this.handleLogout.bind(this);
+        this.cancelLogout = this.cancelLogout.bind(this);
+        this.confirmLogout = this.confirmLogout.bind(this);
     }
 
     componentDidMount() {
+        this.props.clearError();
         this.props.checkAuthState();
         this.focusListener = this.props.navigation.addListener('focus', () => {
-            this.resetForm();
+            this.props.clearError();
+            this.volverInicio();
             this.props.checkAuthState();
         });
     }
 
+    componentDidUpdate(prevProps) {
+        if (prevProps.isAuthenticated !== this.props.isAuthenticated) {
+            this.volverInicio();
+        }
+    }
+
     componentWillUnmount() {
-        this.resetForm();
         this.focusListener();
     }
 
-    handleEmailChange = (email) => {
-        this.setState({ email });
+    handleLogout() {
+        this.setState({ showLogoutConfirmation: true });
     };
 
-    handlePasswordChange = (password) => {
-        this.setState({ password });
+    cancelLogout() {
+        this.setState({ showLogoutConfirmation: false });
     };
 
-    resetForm() {
-        this.props.clearError();
-        this.setState({
-            email: "",
-            password: "",
-        });
+    volverInicio() {
+        if (!this.props.isAuthenticated) {
+            const { navigation } = this.props;
+            navigation.reset({
+                index: 0,
+                routes: [{ name: "Inicio" }],
+            });
+        }
     }
 
-    handleLogin() {
-        const { email, password } = this.state;
+    confirmLogout() {
         this.props.logoutUser();
-        this.resetForm();
-    }
+        this.setState({ showLogoutConfirmation: false });
+    };
 
     render() {
-        const { email, password } = this.state;
-        const { loading, error, isAuthenticated } = this.props;
-        const { navigate } = this.props.navigation;
-
-        if (error) {
-            console.log('Error:', error);
-        }
+        const { showLogoutConfirmation } = this.state;
+        const { loading, error } = this.props;
 
         return (
             <View style={styles.container}>
@@ -81,47 +83,41 @@ class Logout extends Component {
                         source={require("./imagenes/logo.png")}
                     />
                     <View style={styles.form}>
-                        <Input
-                            inputStyle={{ padding: 10 }}
-                            placeholder="Correo electrónico"
-                            leftIcon={<Icon name="envelope" type="font-awesome" size={24} />}
-                            value={email}
-                            autoCapitalize="none"
-                            onChangeText={this.handleEmailChange}
-                        />
-                        <Input
-                            inputStyle={{ padding: 10 }}
-                            name="password"
-                            placeholder="Contraseña"
-                            leftIcon={<Icon name="lock" type="font-awesome" size={24} />}
-                            value={password}
-                            secureTextEntry
-                            onChangeText={this.handlePasswordChange}
-                            autoCapitalize="none"
-                        />
-                        {error && (
-                            <Text style={styles.errorText}>
-                                Fallo al iniciar sesión, inténtelo de nuevo.
-                            </Text>
+                        {showLogoutConfirmation ? (
+                            <View>
+                                <Text style={styles.confirmationText}>
+                                    ¿Quieres cerrar la sesión?
+                                </Text>
+                                <View style={styles.buttonContainer}>
+                                    <Button
+                                        title="Sí"
+                                        buttonStyle={styles.yesButton}
+                                        onPress={this.confirmLogout}
+                                        disabled={loading}
+                                    />
+                                    <Button
+                                        title="No"
+                                        buttonStyle={styles.noButton}
+                                        onPress={this.cancelLogout}
+                                        disabled={loading}
+                                    />
+                                </View>
+                            </View>
+                        ) : (
+                            <View>
+                                <Button
+                                    title={loading ? "Cargando..." : "Cerrar Sesión"}
+                                    onPress={this.handleLogout}
+                                    disabled={loading}
+                                    buttonStyle={styles.logoutButton}
+                                />
+                                {error && (
+                                    <Text style={styles.errorText}>
+                                        Fallo al cerrar sesión, inténtelo de nuevo.
+                                    </Text>
+                                )}
+                            </View>
                         )}
-                        {isAuthenticated && (
-                            <Text style={styles.authenticatedText}>
-                                Autenticado con éxito
-                            </Text>
-                        )}
-                    </View>
-                    <View style={styles.fila}>
-                        <Button
-                            title={loading ? "Cargando..." : "Iniciar Sesión"}
-                            onPress={this.handleLogin}
-                            disabled={loading}
-                        />
-                        <Button
-                            title={"Registrarse"}
-                            type="clear"
-                            onPress={() => navigate("Registro")}
-                            disabled={loading}
-                        />
                     </View>
                 </View>
             </View>
@@ -156,18 +152,30 @@ const styles = StyleSheet.create({
         width: "90%",
         padding: 20,
     },
-    fila: {
+    confirmationText: {
+        fontSize: 18,
+        marginBottom: 20,
+        textAlign: "center",
+    },
+    buttonContainer: {
         flexDirection: "row",
         justifyContent: "center",
         alignItems: "center",
-        padding: 10,
+    },
+    yesButton: {
+        backgroundColor: "green",
+        margin: 10,
+    },
+    noButton: {
+        backgroundColor: "red",
+        margin: 10,
+    },
+    logoutButton: {
+        backgroundColor: "red",
+        marginVertical: 10,
     },
     errorText: {
         color: "red",
-        marginVertical: 10,
-    },
-    authenticatedText: {
-        color: "green",
         marginVertical: 10,
     },
 });
