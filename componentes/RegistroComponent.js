@@ -27,28 +27,37 @@ class Registro extends Component {
       email: "",
       password: "",
       password2: "",
+      errorLocal: "",
     };
     this.handleRegister = this.handleRegister.bind(this);
   }
 
   componentDidMount() {
     this.props.clearError();
-    this.props.checkAuthState();
+    this.unsubscribeAuth = this.props.checkAuthState();
     this.focusListener = this.props.navigation.addListener('focus', () => {
       this.resetForm();
-      this.volverInicio();
-      this.props.checkAuthState();
+      this.props.clearError();
+      this.unsubscribeAuth = this.props.checkAuthState();
     });
+    if (this.props.isAuthenticated) {
+      this.volverInicio();
+    }
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.isAuthenticated !== this.props.isAuthenticated) {
+    if (prevProps.isAuthenticated !== this.props.isAuthenticated && this.props.isAuthenticated) {
       this.volverInicio();
     }
   }
 
   componentWillUnmount() {
-    this.focusListener();
+    if (this.unsubscribeAuth) {
+      this.unsubscribeAuth();
+    }
+    if (this.focusListener) {
+      this.focusListener();
+    }
   }
 
   handleNombreChange = (nombre) => {
@@ -72,8 +81,8 @@ class Registro extends Component {
   };
 
   volverInicio() {
-    if (this.props.isAuthenticated == false) {
-      const { navigation } = this.props;
+    const { navigation, isAuthenticated } = this.props;
+    if (isAuthenticated) {
       navigation.reset({
         index: 0,
         routes: [{ name: "Inicio" }],
@@ -82,7 +91,6 @@ class Registro extends Component {
   }
 
   resetForm() {
-    this.props.clearError();
     this.setState({
       nombre: "",
       apellido: "",
@@ -94,7 +102,6 @@ class Registro extends Component {
   }
 
   resetPassword() {
-    this.props.clearError();
     this.setState({
       password: "",
       password2: "",
@@ -102,8 +109,7 @@ class Registro extends Component {
   }
 
   handleRegister() {
-    const { nombre, apellido, email, password, password2 } = this.state;
-    let errorLocal = "";
+    const { nombre, apellido, email, password, password2, errorLocal } = this.state;
     if (!nombre || !apellido || !email || !password || !password2) {
       errorLocal = "Todos los campos son obligatorios.";
       this.setState({ errorLocal });
@@ -126,6 +132,7 @@ class Registro extends Component {
     }
     this.props.registerUser(nombre, apellido, email, password);
     this.resetPassword();
+    this.props.clearError();
   }
 
   render() {

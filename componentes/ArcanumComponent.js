@@ -85,7 +85,7 @@ function InicioNavegador({ navigation }) {
 function LoginNavegador({ navigation }) {
   return (
     <Stack.Navigator
-      initialRouteName="Login"
+      initialRouteName="LoginNavegador"
       screenOptions={{
         headerMode: "screen",
         headerTintColor: colorAmarillo,
@@ -102,7 +102,7 @@ function LoginNavegador({ navigation }) {
         ),
       }}>
       <Stack.Screen
-        name="Login"
+        name="LoginNavegador"
         component={Login}
         options={{
           title: "Inicio de sesión",
@@ -277,7 +277,7 @@ function DrawerNavegador() {
       <Drawer.Screen
         name="Iniciar Sesión"
         component={LoginNavegador}
-        initialParams={{ screen: 'Login' }}
+        initialParams={{ screen: 'LoginNavegador' }}
         options={{
           drawerIcon: ({ tintColor }) => (
             <Icon name="user" type="font-awesome" size={24} color={tintColor} />

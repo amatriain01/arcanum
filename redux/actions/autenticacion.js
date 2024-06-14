@@ -51,20 +51,20 @@ export const logoutUser = () => {
 };
 
 export const checkAuthState = () => {
-    return async (dispatch) => {
+    return (dispatch) => {
         dispatch({ type: ActionTypes.CHECK_AUTH_STATE_LOADING });
-        try {
-            onAuthStateChanged(auth, (user) => {
-                if (user) {
-                    const userData = extractUserData(user);
-                    dispatch({ type: ActionTypes.CHECK_AUTH_STATE_SUCCESS, payload: userData });
-                } else {
-                    dispatch({ type: ActionTypes.CHECK_AUTH_STATE_SUCCESS, payload: null });
-                }
-            });
-        } catch (error) {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user) {
+                const userData = extractUserData(user);
+                dispatch({ type: ActionTypes.CHECK_AUTH_STATE_SUCCESS, payload: userData });
+            } else {
+                dispatch({ type: ActionTypes.CHECK_AUTH_STATE_SUCCESS, payload: null });
+            }
+        }, (error) => {
             dispatch({ type: ActionTypes.CHECK_AUTH_STATE_ERROR, payload: error.message });
-        }
+        });
+
+        return unsubscribe;
     };
 };
 

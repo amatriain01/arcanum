@@ -30,22 +30,30 @@ class Login extends Component {
 
   componentDidMount() {
     this.props.clearError();
-    this.props.checkAuthState();
+    this.unsubscribeAuth = this.props.checkAuthState();
     this.focusListener = this.props.navigation.addListener('focus', () => {
       this.resetForm();
-      this.volverInicio();
-      this.props.checkAuthState();
+      this.props.clearError();
+      this.unsubscribeAuth = this.props.checkAuthState();
     });
+    if (this.props.isAuthenticated) {
+      this.volverInicio();
+    }
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.isAuthenticated !== this.props.isAuthenticated) {
+    if (prevProps.isAuthenticated !== this.props.isAuthenticated && this.props.isAuthenticated) {
       this.volverInicio();
     }
   }
 
   componentWillUnmount() {
-    this.focusListener();
+    if (this.unsubscribeAuth) {
+      this.unsubscribeAuth();
+    }
+    if (this.focusListener) {
+      this.focusListener();
+    }
   }
 
   handleEmailChange = (email) => {
@@ -57,8 +65,8 @@ class Login extends Component {
   };
 
   volverInicio() {
-    if (this.props.isAuthenticated) {
-      const { navigation } = this.props;
+    const { navigation, isAuthenticated } = this.props;
+    if (isAuthenticated) {
       navigation.reset({
         index: 0,
         routes: [{ name: "Inicio" }],
@@ -67,7 +75,6 @@ class Login extends Component {
   }
 
   resetForm() {
-    this.props.clearError();
     this.setState({
       email: "",
       password: "",
@@ -75,7 +82,6 @@ class Login extends Component {
   }
 
   resetPassword() {
-    this.props.clearError();
     this.setState({
       password: "",
     });
@@ -85,6 +91,7 @@ class Login extends Component {
     const { email, password } = this.state;
     this.props.loginUser(email, password);
     this.resetPassword();
+    this.props.clearError();
   }
 
   render() {

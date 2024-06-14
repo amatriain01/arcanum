@@ -30,22 +30,29 @@ class Logout extends Component {
 
     componentDidMount() {
         this.props.clearError();
-        this.props.checkAuthState();
+        this.unsubscribeAuth = this.props.checkAuthState();
         this.focusListener = this.props.navigation.addListener('focus', () => {
             this.props.clearError();
-            this.volverInicio();
-            this.props.checkAuthState();
+            this.unsubscribeAuth = this.props.checkAuthState();
         });
+        if (this.props.isAuthenticated) {
+            this.volverInicio();
+        }
     }
 
     componentDidUpdate(prevProps) {
-        if (prevProps.isAuthenticated !== this.props.isAuthenticated) {
+        if (prevProps.isAuthenticated !== this.props.isAuthenticated && !this.props.isAuthenticated) {
             this.volverInicio();
         }
     }
 
     componentWillUnmount() {
-        this.focusListener();
+        if (this.unsubscribeAuth) {
+            this.unsubscribeAuth();
+        }
+        if (this.focusListener) {
+            this.focusListener();
+        }
     }
 
     handleLogout() {
@@ -57,8 +64,8 @@ class Logout extends Component {
     };
 
     volverInicio() {
-        if (!this.props.isAuthenticated) {
-            const { navigation } = this.props;
+        const { navigation, isAuthenticated } = this.props;
+        if (!isAuthenticated) {
             navigation.reset({
                 index: 0,
                 routes: [{ name: "Inicio" }],
