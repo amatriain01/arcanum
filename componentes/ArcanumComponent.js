@@ -6,7 +6,11 @@ import Falso from "./FalsoComponent";
 import Login from "./LoginComponent";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { DrawerActions, NavigationContainer } from "@react-navigation/native";
-import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList } from "@react-navigation/drawer";
+import {
+  createDrawerNavigator,
+  DrawerContentScrollView,
+  DrawerItemList,
+} from "@react-navigation/drawer";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Icon } from "@rneui/themed";
 import { colorAmarillo, colorAmarilloClaro, colorAzul } from "../app.config";
@@ -16,12 +20,13 @@ import { checkAuthState, logoutUser } from "../redux/actions/autenticacion";
 import Registro from "./RegistroComponent";
 import Logout from "./LogoutComponent";
 import Biblioteca from "./BibliotecaComponent";
+import DetalleLibro from "./DetalleLibroComponent";
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   autenticacion: state.autenticacion,
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   checkAuthState: () => dispatch(checkAuthState()),
   logoutUser: () => dispatch(logoutUser()),
 });
@@ -130,34 +135,34 @@ function BibliotecaNavegador({ navigation }) {
         headerTitleAlign: "center",
         headerStyle: { backgroundColor: colorAzul },
         headerTitleStyle: { color: colorAmarillo },
-        headerLeft: () => (
-          <Icon
-            name="menu"
-            size={28}
-            color={colorAmarillo}
-            onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
-          />
-        ),
       }}>
       <Stack.Screen
         name="BibliotecaNavegador"
         component={Biblioteca}
         options={{
           title: "Biblioteca",
+          headerLeft: () => (
+            <Icon
+              name="menu"
+              size={28}
+              color={colorAmarillo}
+              onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
+            />
+          ),
         }}
       />
       <Stack.Screen
-        name="DetallesLibro"
-        component={Falso}
+        name="DetalleLibro"
+        component={DetalleLibro}
         options={{
           title: "Detalles del libro",
         }}
       />
       <Stack.Screen
-        name="Discusiones"
+        name="Discusion"
         component={Falso}
         options={{
-          title: "Discusiones",
+          title: "Discusion",
         }}
       />
     </Stack.Navigator>
@@ -301,7 +306,7 @@ function DrawerNavegador() {
       <Drawer.Screen
         name="Biblioteca"
         component={BibliotecaNavegador}
-        initialParams={{ screen: 'BibliotecaNavegador' }}
+        initialParams={{ screen: "BibliotecaNavegador" }}
         options={{
           drawerIcon: ({ tintColor }) => (
             <Icon name="book" type="font-awesome" size={24} color={tintColor} />

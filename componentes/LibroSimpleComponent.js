@@ -1,8 +1,7 @@
 import React from "react";
-import { View, Text, Image, StyleSheet, Dimensions } from "react-native";
+import { View, Text, Image, StyleSheet } from "react-native";
 import { FontAwesome } from "@expo/vector-icons"; // Importa el icono de estrella desde FontAwesome
-import { colorAmarillo, colorAmarilloClaro, colorAzulClaro } from "../app.config";
-
+import { colorAmarillo, colorAmarilloClaro } from "../app.config";
 
 const LibroSimple = ({ libro, mostrarValidacion }) => {
   const { imagen, titulo, autor } = libro;

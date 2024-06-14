@@ -1,11 +1,12 @@
 import { Component, React } from "react";
 import {ListItem } from "react-native-elements";
-import { Dimensions, FlatList, SafeAreaView, StyleSheet, View } from "react-native";
+import { FlatList, SafeAreaView, StyleSheet, View } from "react-native";
 import {colorAzulClaro } from "../app.config";
 import LibroSimple from "./LibroSimpleComponent";
 
 const libros = [
   {
+    id: 0,
     imagen: require("./imagenes/jaizkibel.png"),
     titulo: "El Señor de los Anillos",
     autor: "J.R.R. Tolkien",
@@ -13,6 +14,7 @@ const libros = [
     comentarios: 10,
   },
   {
+    id: 1,
     imagen: require("./imagenes/logo.png"),
     titulo: "Cien años de soledad",
     autor: "Gabriel García Márquez",
@@ -20,6 +22,7 @@ const libros = [
     comentarios: 8,
   },
   {
+    id: 2,
     imagen: require("./imagenes/puntaEscarra.png"),
     titulo: "Harry Potter y la piedra filosofal",
     autor: "J.K. Rowling",
@@ -27,6 +30,7 @@ const libros = [
     comentarios: 5,
   },
   {
+    id: 3,
     imagen: require("./imagenes/jaizkibel.png"),
     titulo: "El Señor de los Anillos",
     autor: "J.R.R. Tolkien",
@@ -34,6 +38,7 @@ const libros = [
     comentarios: 10,
   },
   {
+    id: 4,
     imagen: require("./imagenes/logo.png"),
     titulo: "Cien años de soledad",
     autor: "Gabriel García Márquez",
@@ -41,6 +46,7 @@ const libros = [
     comentarios: 8,
   },
   {
+    id: 5,
     imagen: require("./imagenes/puntaEscarra.png"),
     titulo: "Harry Potter y la piedra filosofal",
     autor: "J.K. Rowling",
@@ -48,6 +54,7 @@ const libros = [
     comentarios: 5,
   },
   {
+    id: 6,
     imagen: require("./imagenes/jaizkibel.png"),
     titulo: "El Señor de los Anillos",
     autor: "J.R.R. Tolkien",
@@ -55,6 +62,7 @@ const libros = [
     comentarios: 10,
   },
   {
+    id: 7,
     imagen: require("./imagenes/logo.png"),
     titulo: "Cien años de soledad",
     autor: "Gabriel García Márquez",
@@ -62,6 +70,7 @@ const libros = [
     comentarios: 8,
   },
   {
+    id: 8,
     imagen: require("./imagenes/puntaEscarra.png"),
     titulo: "Harry Potter y la piedra filosofal",
     autor: "J.K. Rowling",
@@ -79,7 +88,7 @@ class Biblioteca extends Component {
         <ListItem
           containerStyle={styles.container}
           key={index}
-          onPress={() => navigate("Inicio", { excursionId: item.id })}
+          onPress={() => navigate("DetalleLibro", { libroId: item.id })}
           bottomDivider>
             <LibroSimple libro={item} mostrarValidacion={true} />
         </ListItem>
@@ -91,8 +100,7 @@ class Biblioteca extends Component {
         <FlatList
           data={libros}
           renderItem={renderBibliotecaItem}
-          // keyExtractor={(item) => item.id.toString()
-          keyExtractor={Math.random}
+          keyExtractor={(item) => item.id.toString()}
         />
       </SafeAreaView>
     );
