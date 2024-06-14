@@ -35,7 +35,7 @@ class Logout extends Component {
             this.props.clearError();
             this.unsubscribeAuth = this.props.checkAuthState();
         });
-        if (this.props.isAuthenticated) {
+        if (!this.props.isAuthenticated) {
             this.volverInicio();
         }
     }

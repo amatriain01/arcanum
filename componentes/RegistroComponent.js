@@ -109,7 +109,8 @@ class Registro extends Component {
   }
 
   handleRegister() {
-    const { nombre, apellido, email, password, password2, errorLocal } = this.state;
+    const { nombre, apellido, email, password, password2 } = this.state;
+    let errorLocal = "";
     if (!nombre || !apellido || !email || !password || !password2) {
       errorLocal = "Todos los campos son obligatorios.";
       this.setState({ errorLocal });
