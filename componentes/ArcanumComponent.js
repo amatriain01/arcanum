@@ -15,20 +15,19 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Icon } from "@rneui/themed";
 import { colorAmarillo, colorAmarilloClaro, colorAzul } from "../app.config";
 import Inicio from "./InicioComponent";
-import { connect, useSelector } from "react-redux";
-import { checkAuthState, logoutUser } from "../redux/actions/autenticacion";
+import { connect } from "react-redux";
+import { checkAuthState } from "../redux/actions/autenticacion";
 import Registro from "./RegistroComponent";
 import Logout from "./LogoutComponent";
 import Biblioteca from "./BibliotecaComponent";
 import DetalleLibro from "./DetalleLibroComponent";
 
 const mapStateToProps = (state) => ({
-  autenticacion: state.autenticacion,
+  isAuthenticated: state.autenticacion.isAuthenticated,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   checkAuthState: () => dispatch(checkAuthState()),
-  logoutUser: () => dispatch(logoutUser()),
 });
 
 function CustomDrawerContent(props) {
@@ -259,8 +258,7 @@ function EventosNavegador({ navigation }) {
   );
 }
 
-function DrawerNavegador() {
-  const isAuthenticated = useSelector((state) => state.autenticacion.isAuthenticated);
+function DrawerNavegador(props) {
   return (
     <Drawer.Navigator
       initialRouteName="Inicio"
@@ -280,6 +278,34 @@ function DrawerNavegador() {
           ),
         }}
       />
+      {!props.isAuthenticated && (
+        <Drawer.Screen
+          name="Iniciar Sesión"
+          component={LoginNavegador}
+          initialParams={{ screen: "LoginNavegador" }}
+          options={{
+            drawerIcon: ({ tintColor }) => (
+              <Icon name="user" type="font-awesome" size={24} color={tintColor} />
+            ),
+          }}
+        />
+      )}
+      {props.isAuthenticated && (
+        <Drawer.Screen
+          name="Mi Perfil"
+          component={PerfilNavegador}
+          options={{
+            drawerIcon: ({ tintColor }) => (
+              <Icon
+                name="address-card"
+                type="font-awesome"
+                size={24}
+                color={tintColor}
+              />
+            ),
+          }}
+        />
+      )}
       <Drawer.Screen
         name="Biblioteca"
         component={BibliotecaNavegador}
@@ -304,29 +330,7 @@ function DrawerNavegador() {
           ),
         }}
       />
-      {ContenidoAutenticacion(isAuthenticated)}
-    </Drawer.Navigator>
-  );
-}
-
-const ContenidoAutenticacion = (isAuthenticated) => {
-  if (isAuthenticated === true) {
-    return (
-      <>
-        <Drawer.Screen
-          name="Mi Perfil"
-          component={PerfilNavegador}
-          options={{
-            drawerIcon: ({ tintColor }) => (
-              <Icon
-                name="address-card"
-                type="font-awesome"
-                size={24}
-                color={tintColor}
-              />
-            ),
-          }}
-        />
+      {props.isAuthenticated && (
         <Drawer.Screen
           name="Cerrar Sesión"
           component={LogoutNavegador}
@@ -341,25 +345,26 @@ const ContenidoAutenticacion = (isAuthenticated) => {
             ),
           }}
         />
-      </>
-    );
-  } else {
-    return (
-      <Drawer.Screen
-        name="Iniciar Sesión"
-        component={LoginNavegador}
-        initialParams={{ screen: "LoginNavegador" }}
-        options={{
-          drawerIcon: ({ tintColor }) => (
-            <Icon name="user" type="font-awesome" size={24} color={tintColor} />
-          ),
-        }}
-      />
-    );
-  }
-};
+      )}
+    </Drawer.Navigator>
+  );
+}
 
 class Arcanum extends Component {
+  componentDidMount() {
+    this.unsubscribeAuth = this.props.checkAuthState();
+  }
+
+  componentDidUpdate() {
+    this.unsubscribeAuth = this.props.checkAuthState();
+  }
+
+  componentWillUnmount() {
+    if (this.unsubscribeAuth) {
+      this.unsubscribeAuth();
+    }
+  }
+
   render() {
     return (
       <NavigationContainer>
@@ -369,7 +374,7 @@ class Arcanum extends Component {
             paddingTop:
               Platform.OS === "android" ? 0 : Constants.statusBarHeight,
           }}>
-          <DrawerNavegador />
+          <DrawerNavegador isAuthenticated={this.props.isAuthenticated} />
         </View>
       </NavigationContainer>
     );
