@@ -15,7 +15,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Icon } from "@rneui/themed";
 import { colorAmarillo, colorAmarilloClaro, colorAzul } from "../app.config";
 import Inicio from "./InicioComponent";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import { checkAuthState, logoutUser } from "../redux/actions/autenticacion";
 import Registro from "./RegistroComponent";
 import Logout from "./LogoutComponent";
@@ -260,6 +260,7 @@ function EventosNavegador({ navigation }) {
 }
 
 function DrawerNavegador() {
+  const isAuthenticated = useSelector((state) => state.autenticacion.isAuthenticated);
   return (
     <Drawer.Navigator
       initialRouteName="Inicio"
@@ -276,30 +277,6 @@ function DrawerNavegador() {
         options={{
           drawerIcon: ({ tintColor }) => (
             <Icon name="home" type="font-awesome" size={24} color={tintColor} />
-          ),
-        }}
-      />
-      <Drawer.Screen
-        name="Iniciar Sesión"
-        component={LoginNavegador}
-        initialParams={{ screen: 'LoginNavegador' }}
-        options={{
-          drawerIcon: ({ tintColor }) => (
-            <Icon name="user" type="font-awesome" size={24} color={tintColor} />
-          ),
-        }}
-      />
-      <Drawer.Screen
-        name="Mi Perfil"
-        component={PerfilNavegador}
-        options={{
-          drawerIcon: ({ tintColor }) => (
-            <Icon
-              name="address-card"
-              type="font-awesome"
-              size={24}
-              color={tintColor}
-            />
           ),
         }}
       />
@@ -327,23 +304,60 @@ function DrawerNavegador() {
           ),
         }}
       />
-      <Drawer.Screen
-        name="Cerrar Sesión"
-        component={LogoutNavegador}
-        options={{
-          drawerIcon: ({ tintColor }) => (
-            <Icon
-              name="sign-out"
-              type="font-awesome"
-              size={24}
-              color={tintColor}
-            />
-          ),
-        }}
-      />
+      {ContenidoAutenticacion(isAuthenticated)}
     </Drawer.Navigator>
   );
 }
+
+const ContenidoAutenticacion = (isAuthenticated) => {
+  if (isAuthenticated === true) {
+    return (
+      <>
+        <Drawer.Screen
+          name="Mi Perfil"
+          component={PerfilNavegador}
+          options={{
+            drawerIcon: ({ tintColor }) => (
+              <Icon
+                name="address-card"
+                type="font-awesome"
+                size={24}
+                color={tintColor}
+              />
+            ),
+          }}
+        />
+        <Drawer.Screen
+          name="Cerrar Sesión"
+          component={LogoutNavegador}
+          options={{
+            drawerIcon: ({ tintColor }) => (
+              <Icon
+                name="sign-out"
+                type="font-awesome"
+                size={24}
+                color={tintColor}
+              />
+            ),
+          }}
+        />
+      </>
+    );
+  } else {
+    return (
+      <Drawer.Screen
+        name="Iniciar Sesión"
+        component={LoginNavegador}
+        initialParams={{ screen: "LoginNavegador" }}
+        options={{
+          drawerIcon: ({ tintColor }) => (
+            <Icon name="user" type="font-awesome" size={24} color={tintColor} />
+          ),
+        }}
+      />
+    );
+  }
+};
 
 class Arcanum extends Component {
   render() {
