@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
-import { FontAwesome } from "@expo/vector-icons"; // Importa el icono de estrella desde FontAwesome
+import { FontAwesome } from "@expo/vector-icons";
 import { colorAmarillo, colorAmarilloClaro } from "../app.config";
 
 const LibroSimple = ({ libro, mostrarValidacion }) => {
@@ -11,7 +11,7 @@ const LibroSimple = ({ libro, mostrarValidacion }) => {
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
-        <Image source={imagen} style={styles.image} resizeMode="contain" />
+        <Image source={{ uri: imagen }} style={styles.image} resizeMode="contain" />
       </View>
       <View style={styles.infoContainer}>
         <Text style={styles.title}>{titulo}</Text>

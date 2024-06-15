@@ -10,21 +10,21 @@ const { width: screenWidth } = Dimensions.get("window");
 
 const libros = [
   {
-    imagen: require("./imagenes/jaizkibel.png"),
+    imagen: "https://firebasestorage.googleapis.com/v0/b/arcanum-reactnative-dsm-2024.appspot.com/o/libros%2F0.jpg?alt=media&token=311d6ee9-cc8d-4913-9546-591bd045b073",
     titulo: "El Señor de los Anillos",
     autor: "J.R.R. Tolkien",
     valoracion: 5,
     comentarios: 10,
   },
   {
-    imagen: require("./imagenes/logo.png"),
+    imagen: "https://firebasestorage.googleapis.com/v0/b/arcanum-reactnative-dsm-2024.appspot.com/o/libros%2F0.jpg?alt=media&token=311d6ee9-cc8d-4913-9546-591bd045b073",
     titulo: "Cien años de soledad",
     autor: "Gabriel García Márquez",
     valoracion: 4,
     comentarios: 8,
   },
   {
-    imagen: require("./imagenes/puntaEscarra.png"),
+    imagen: "https://firebasestorage.googleapis.com/v0/b/arcanum-reactnative-dsm-2024.appspot.com/o/libros%2F0.jpg?alt=media&token=311d6ee9-cc8d-4913-9546-591bd045b073",
     titulo: "Harry Potter y la piedra filosofal",
     autor: "J.K. Rowling",
     valoracion: 4.5,

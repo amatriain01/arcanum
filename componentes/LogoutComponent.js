@@ -7,7 +7,7 @@ import { clearError, logoutUser, checkAuthState } from "../redux/actions/autenti
 
 const mapStateToProps = (state) => ({
     loading: state.autenticacion.loading,
-    error: state.autenticacion.error,
+    error: state.autenticacion.errMess,
     isAuthenticated: state.autenticacion.isAuthenticated,
 });
 

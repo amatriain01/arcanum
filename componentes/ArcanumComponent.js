@@ -6,11 +6,7 @@ import Falso from "./FalsoComponent";
 import Login from "./LoginComponent";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { DrawerActions, NavigationContainer } from "@react-navigation/native";
-import {
-  createDrawerNavigator,
-  DrawerContentScrollView,
-  DrawerItemList,
-} from "@react-navigation/drawer";
+import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList } from "@react-navigation/drawer";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Icon } from "@rneui/themed";
 import { colorAmarillo, colorAmarilloClaro, colorAzul } from "../app.config";

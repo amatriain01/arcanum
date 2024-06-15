@@ -9,59 +9,118 @@ const extractUserData = (user) => ({
     photoURL: user.photoURL,
 });
 
+
+export const registerLoading = () => ({
+    type: ActionTypes.REGISTER_LOADING
+});
+
+export const registerSuccess = (userData) => ({
+    type: ActionTypes.REGISTER_SUCCESS,
+    payload: userData
+});
+
+export const registerError = (errMess) => ({
+    type: ActionTypes.REGISTER_ERROR,
+    payload: errMess
+});
+
 export const registerUser = (nombre, apellido, email, password) => {
     return async (dispatch) => {
-        dispatch({ type: ActionTypes.REGISTER_LOADING });
+        dispatch(registerLoading());
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             await updateProfile(userCredential.user, {
                 displayName: `${nombre} ${apellido}`
             });
             const userData = extractUserData(userCredential.user);
-            dispatch({ type: ActionTypes.REGISTER_SUCCESS, payload: userData });
+            dispatch(registerSuccess(userData));
         } catch (error) {
-            dispatch({ type: ActionTypes.REGISTER_ERROR, payload: error.message });
+            dispatch(registerError(error.message));
         }
     };
 };
+
+
+export const loginLoading = () => ({
+    type: ActionTypes.LOGIN_LOADING
+});
+
+export const loginSuccess = (userData) => ({
+    type: ActionTypes.LOGIN_SUCCESS,
+    payload: userData
+});
+
+export const loginError = (errMess) => ({
+    type: ActionTypes.LOGIN_ERROR,
+    payload: errMess
+});
 
 export const loginUser = (email, password) => {
     return async (dispatch) => {
-        dispatch({ type: ActionTypes.LOGIN_LOADING });
+        dispatch(loginLoading());
         try {
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             const userData = extractUserData(userCredential.user);
-            dispatch({ type: ActionTypes.LOGIN_SUCCESS, payload: userData });
+            dispatch(loginSuccess(userData));
         } catch (error) {
-            dispatch({ type: ActionTypes.LOGIN_ERROR, payload: error.message });
+            dispatch(loginError(error.message));
         }
     };
 };
+
+
+export const logoutLoading = () => ({
+    type: ActionTypes.LOGOUT_LOADING
+});
+
+export const logoutSuccess = () => ({
+    type: ActionTypes.LOGOUT_SUCCESS
+});
+
+export const logoutError = (errMess) => ({
+    type: ActionTypes.LOGOUT_ERROR,
+    payload: errMess
+});
 
 export const logoutUser = () => {
     return async (dispatch) => {
-        dispatch({ type: ActionTypes.LOGOUT_LOADING });
+        dispatch(logoutLoading());
         try {
             await signOut(auth);
-            dispatch({ type: ActionTypes.LOGOUT_SUCCESS });
+            dispatch(logoutSuccess());
         } catch (error) {
-            dispatch({ type: ActionTypes.LOGOUT_ERROR, payload: error.message });
+            dispatch(logoutError(error.message));
         }
     };
 };
 
+
+export const checkAuthStateLoading = () => ({
+    type: ActionTypes.CHECK_AUTH_STATE_LOADING
+});
+
+export const checkAuthStateSuccess = (userData) => ({
+    type: ActionTypes.CHECK_AUTH_STATE_SUCCESS,
+    payload: userData
+});
+
+export const checkAuthStateError = (errMess) => ({
+    type: ActionTypes.CHECK_AUTH_STATE_ERROR,
+    payload: errMess
+});
+
 export const checkAuthState = () => {
     return (dispatch) => {
-        dispatch({ type: ActionTypes.CHECK_AUTH_STATE_LOADING });
+        dispatch(checkAuthStateLoading());
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             if (user) {
                 const userData = extractUserData(user);
-                dispatch({ type: ActionTypes.CHECK_AUTH_STATE_SUCCESS, payload: userData });
+                dispatch(checkAuthStateSuccess(userData));
             } else {
-                dispatch({ type: ActionTypes.CHECK_AUTH_STATE_SUCCESS, payload: null });
+                dispatch(checkAuthStateSuccess(null));
             }
         }, (error) => {
-            dispatch({ type: ActionTypes.CHECK_AUTH_STATE_ERROR, payload: error.message });
+            dispatch(checkAuthStateError(error.message));
         });
 
         return unsubscribe;

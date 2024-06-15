@@ -1,44 +1,6 @@
 import * as ActionTypes from './ActionTypes';
 import 'firebase/auth';
 
-export const fetchLibros = () => (dispatch) => {
-
-    dispatch(librosLoading());
-
-    return fetch(baseDatosUrl + 'libros')
-        .then(response => {
-            if (response.ok) {
-                return response;
-            } else {
-                var error = new Error('Error ' + response.status + ': ' + response.statusText);
-                error.response = response;
-                throw error;
-            }
-        },
-            error => {
-                var errmess = new Error(error.message);
-                throw errmess;
-            })
-        .then(response => response.json())
-        .then(libros => dispatch(addLibros(libros)))
-        .catch(error => dispatch(librosFailed(error.message)));
-};
-
-export const librosLoading = () => ({
-    type: ActionTypes.LIBROS_LOADING
-});
-
-export const librosFailed = (errmess) => ({
-    type: ActionTypes.LIBROS_FAILED,
-    payload: errmess
-});
-
-export const addLibros = (libros) => ({
-    type: ActionTypes.ADD_LIBROS,
-    payload: libros
-});
-
-
 export const fetchComentarios = () => (dispatch) => {
 
     dispatch(comentariosLoading());
@@ -153,32 +115,32 @@ export const addEventos = (eventos) => ({
 });
 
 
-export const addToPendiente = (libroId, estado) => ({
+export const addToPendiente = (idLibro, estado) => ({
     type: ActionTypes.ADD_TO_PENDIENTE,
-    payload: libroId, estado,
+    payload: idLibro, estado,
 });
 
-export const moveToPendiente = (libroId) => ({
+export const moveToPendiente = (idLibro) => ({
     type: ActionTypes.MOVE_TO_PENDIENTE,
-    payload: libroId,
+    payload: idLibro,
 });
 
-export const addToLeyendo = (libroId) => ({
+export const addToLeyendo = (idLibro) => ({
     type: ActionTypes.ADD_TO_LEYENDO,
-    payload: libroId,
+    payload: idLibro,
 });
 
-export const moveToLeyendo = (libroId) => ({
+export const moveToLeyendo = (idLibro) => ({
     type: ActionTypes.MOVE_TO_LEYENDO,
-    payload: libroId,
+    payload: idLibro,
 });
 
-export const addToCompletado = (libroId) => ({
+export const addToCompletado = (idLibro) => ({
     type: ActionTypes.ADD_TO_COMPLETADO,
-    payload: libroId,
+    payload: idLibro,
 });
 
-export const moveToCompletado = (libroId) => ({
+export const moveToCompletado = (idLibro) => ({
     type: ActionTypes.MOVE_TO_COMPLETADO,
-    payload: libroId,
+    payload: idLibro,
 });

@@ -1,33 +1,23 @@
 import { Component, useState } from "react";
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import { Button, Card, Icon } from "react-native-elements";
-import {
-  colorAmarillo,
-  colorAmarilloClaro,
-  colorAzul,
-  colorAzulClaro,
-} from "../app.config";
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Card, Icon } from "react-native-elements";
+import { colorAmarillo, colorAmarilloClaro, colorAzul, colorAzulClaro } from "../app.config";
 import { SelectList } from "react-native-dropdown-select-list";
-import { color } from "@rneui/base";
+import { connect } from "react-redux";
+import { fetchDetalleLibro } from "../redux/actions/libros";
+import { IndicadorActividad } from "./IndicadorActividadComponent";
+
+const mapStateToProps = (state) => ({
+  loading: state.libros.loading,
+  error: state.libros.errMess,
+  libro: state.libros.libro,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  fetchDetalleLibro: (idLibro) => dispatch(fetchDetalleLibro(idLibro)),
+});
 
 function InfoLibro(props) {
-  const libro = {
-    id: 8,
-    imagen: require("./imagenes/arcanum-ilimitado.jpg"),
-    titulo: "Arcanum ilimitado",
-    autor: "Brandon Sanderson",
-    valoracion: 4.5,
-    comentarios: 5,
-    descripcion:
-      "«Arcanum Ilimitado» es una antología de relatos que recopila las historias relacionadas con el Cosmere que Brandon Sanderson ha publicado a lo largo de los años. Aunque algunos son relatos independientes que se pueden disfrutar por separado, pero otras requieren haber leído previamente algunas novelas del Cosmere.",
-  };
-
   const listadoEstados = [
     {
       key: 0,
@@ -49,13 +39,13 @@ function InfoLibro(props) {
 
   //Aqui sería que compruebe si ya hay uno y lo ponga y si no por defecto
   // estado != null ? estado : "Selecciona un estado" 
-  const [selected, setSelected] = useState("Selecciona un estado"); 
+  const [selected, setSelected] = useState("Selecciona un estado");
   return (
     <View>
       <Card containerStyle={styles.container}>
-        <Card.Title style={styles.titulo}>{libro.titulo}</Card.Title>
+        <Card.Title style={styles.titulo}>{props.libro.titulo}</Card.Title>
         <View style={styles.cuerpo}>
-          <Card.Image source={libro.imagen} style={styles.imagen} />
+          <Card.Image source={props.libro.imagen} style={styles.imagen} />
           <View style={styles.info}>
             <SelectList
               setSelected={(val) => setSelected(val)}
@@ -66,9 +56,9 @@ function InfoLibro(props) {
               defaultOption={{ key: 0, value: selected }}
               style={{ width: 300, color: colorAzul }}
             />
-            <Text style={styles.texto}>Autor: {libro.autor}</Text>
+            <Text style={styles.texto}>Autor: {props.libro.autor}</Text>
             <View style={styles.ratingContainer}>
-              <Text style={styles.texto}>Puntuación: {libro.valoracion} </Text>
+              <Text style={styles.texto}>Puntuación: {props.libro.valoracion} </Text>
               <Icon
                 name="star"
                 type="font-awesome"
@@ -76,7 +66,7 @@ function InfoLibro(props) {
                 color={colorAmarillo}
               />
             </View>
-            <Text style={styles.texto}>{libro.descripcion}</Text>
+            <Text style={styles.texto}>{props.libro.descripcion}</Text>
           </View>
           <View>
             <TouchableOpacity
@@ -117,12 +107,29 @@ function InfoLibro(props) {
 }
 
 class DetalleLibro extends Component {
+  componentDidMount() {
+    this.props.fetchDetalleLibro(this.props.route.params.idLibro);
+  }
+
   render() {
     const { navigate } = this.props.navigation;
-    const { libroId } = this.props.route.params;
+    const { libro, loading, error } = this.props;
+
+    if (loading) {
+      return <IndicadorActividad />;
+    }
+
+    if (error) {
+      return (
+        <View>
+          <Text>Error al cargar el libro.</Text>
+        </View>
+      );
+    }
+
     return (
       <ScrollView style={{ backgroundColor: colorAmarilloClaro }}>
-        <InfoLibro navigate={navigate} />
+        <InfoLibro navigate={navigate} libro={libro} />
       </ScrollView>
     );
   }
@@ -186,4 +193,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default DetalleLibro;
+export default connect(mapStateToProps, mapDispatchToProps)(DetalleLibro);

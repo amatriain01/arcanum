@@ -1,96 +1,54 @@
 import { Component, React } from "react";
-import {ListItem } from "react-native-elements";
-import { FlatList, SafeAreaView, StyleSheet, View } from "react-native";
-import {colorAzulClaro } from "../app.config";
+import { ListItem } from "react-native-elements";
+import { FlatList, SafeAreaView, StyleSheet, View, Text } from "react-native";
+import { colorAzulClaro } from "../app.config";
 import LibroSimple from "./LibroSimpleComponent";
+import { connect } from "react-redux";
+import { fetchLibros } from "../redux/actions/libros";
+import { IndicadorActividad } from "./IndicadorActividadComponent";
 
-const libros = [
-  {
-    id: 0,
-    imagen: require("./imagenes/jaizkibel.png"),
-    titulo: "El Señor de los Anillos",
-    autor: "J.R.R. Tolkien",
-    valoracion: 5,
-    comentarios: 10,
-  },
-  {
-    id: 1,
-    imagen: require("./imagenes/logo.png"),
-    titulo: "Cien años de soledad",
-    autor: "Gabriel García Márquez",
-    valoracion: 4,
-    comentarios: 8,
-  },
-  {
-    id: 2,
-    imagen: require("./imagenes/puntaEscarra.png"),
-    titulo: "Harry Potter y la piedra filosofal",
-    autor: "J.K. Rowling",
-    valoracion: 4.5,
-    comentarios: 5,
-  },
-  {
-    id: 3,
-    imagen: require("./imagenes/jaizkibel.png"),
-    titulo: "El Señor de los Anillos",
-    autor: "J.R.R. Tolkien",
-    valoracion: 5,
-    comentarios: 10,
-  },
-  {
-    id: 4,
-    imagen: require("./imagenes/logo.png"),
-    titulo: "Cien años de soledad",
-    autor: "Gabriel García Márquez",
-    valoracion: 4,
-    comentarios: 8,
-  },
-  {
-    id: 5,
-    imagen: require("./imagenes/puntaEscarra.png"),
-    titulo: "Harry Potter y la piedra filosofal",
-    autor: "J.K. Rowling",
-    valoracion: 4.5,
-    comentarios: 5,
-  },
-  {
-    id: 6,
-    imagen: require("./imagenes/jaizkibel.png"),
-    titulo: "El Señor de los Anillos",
-    autor: "J.R.R. Tolkien",
-    valoracion: 5,
-    comentarios: 10,
-  },
-  {
-    id: 7,
-    imagen: require("./imagenes/logo.png"),
-    titulo: "Cien años de soledad",
-    autor: "Gabriel García Márquez",
-    valoracion: 4,
-    comentarios: 8,
-  },
-  {
-    id: 8,
-    imagen: require("./imagenes/puntaEscarra.png"),
-    titulo: "Harry Potter y la piedra filosofal",
-    autor: "J.K. Rowling",
-    valoracion: 4.5,
-    comentarios: 5,
-  },
-];
+const mapStateToProps = (state) => ({
+  loading: state.libros.loading,
+  error: state.libros.errMess,
+  libros: state.libros.libros,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  fetchLibros: () => dispatch(fetchLibros()),
+});
 
 class Biblioteca extends Component {
+  componentDidMount() {
+    this.props.fetchLibros();
+  }
+
   render() {
     const { navigate } = this.props.navigation;
+    const { libros, loading, error } = this.props;
+
+    if (loading) {
+      return (
+        <IndicadorActividad />
+      );
+    }
+
+    if (error) {
+      console.log('Error: ', error);
+      return (
+        <View>
+          <Text>Error al cargar la Biblioteca.</Text>
+        </View>
+      );
+    }
 
     const renderBibliotecaItem = ({ item, index }) => {
       return (
         <ListItem
           containerStyle={styles.container}
           key={index}
-          onPress={() => navigate("DetalleLibro", { libroId: item.id })}
+          onPress={() => navigate("DetalleLibro", { idLibro: item.idLibro })}
           bottomDivider>
-            <LibroSimple libro={item} mostrarValidacion={true} />
+          <LibroSimple libro={item} mostrarValidacion={true} />
         </ListItem>
       );
     };
@@ -100,7 +58,7 @@ class Biblioteca extends Component {
         <FlatList
           data={libros}
           renderItem={renderBibliotecaItem}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(item) => item.idLibro.toString()}
         />
       </SafeAreaView>
     );
@@ -115,4 +73,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Biblioteca;
+export default connect(mapStateToProps, mapDispatchToProps)(Biblioteca);
