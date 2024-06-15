@@ -114,7 +114,6 @@ const renderComentariosItem = ({ item, index }) => {
     <ListItem
       containerStyle={styles.containerDiscusion}
       key={index}
-      onPress={() => navigate("DetalleLibro", { libroId: item.id })}
       bottomDivider>
       <View
         style={{
