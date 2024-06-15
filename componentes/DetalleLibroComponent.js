@@ -1,19 +1,22 @@
 import { Component, useState } from "react";
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Modal } from "react-native";
 import { Card, Icon } from "react-native-elements";
 import { colorAmarillo, colorAmarilloClaro, colorAzul, colorAzulClaro } from "../app.config";
 import { SelectList } from "react-native-dropdown-select-list";
 import { connect } from "react-redux";
+import { checkAuthState } from "../redux/actions/autenticacion";
 import { fetchDetalleLibro } from "../redux/actions/libros";
 import { IndicadorActividad } from "./IndicadorActividadComponent";
 
 const mapStateToProps = (state) => ({
+  isAuthenticated: state.autenticacion.isAuthenticated,
   loading: state.libros.loading,
   error: state.libros.errMess,
   libro: state.libros.libro,
 });
 
 const mapDispatchToProps = (dispatch) => ({
+  checkAuthState: () => dispatch(checkAuthState()),
   fetchDetalleLibro: (idLibro) => dispatch(fetchDetalleLibro(idLibro)),
 });
 
@@ -37,8 +40,10 @@ function InfoLibro(props) {
     },
   ];
 
+  //Faltaría coger este valor de redux :)
+  const isAuthenticated = props.isAuthenticated;
   //Aqui sería que compruebe si ya hay uno y lo ponga y si no por defecto
-  // estado != null ? estado : "Selecciona un estado" 
+  // estado != null ? estado : "Selecciona un estado"
   const [selected, setSelected] = useState("Selecciona un estado");
   return (
     <View>
@@ -71,7 +76,13 @@ function InfoLibro(props) {
           <View>
             <TouchableOpacity
               style={styles.boton}
-              onPress={() => props.navigate("Discusion")}>
+              onPress={() => {
+                if (isAuthenticated) {
+                  props.navigate("Discusion", { libroId: props.libroId });
+                } else {
+                  props.toggleModal();
+                }
+              }}>
               <View style={{ flex: 1, alignItems: "center" }}>
                 <Text style={styles.texto}>Ver la discusión del libro</Text>
               </View>
@@ -87,7 +98,13 @@ function InfoLibro(props) {
           <View>
             <TouchableOpacity
               style={styles.boton}
-              onPress={() => props.navigate("Valoraciones")}>
+              onPress={() => {
+                if (isAuthenticated) {
+                  props.navigate("Valoraciones", { libroId: props.libroId });
+                } else {
+                  props.toggleModal();
+                }
+              }}>
               <View style={{ flex: 1, alignItems: "center" }}>
                 <Text style={styles.texto}>Ver las reseñas del libro</Text>
               </View>
@@ -109,11 +126,35 @@ function InfoLibro(props) {
 class DetalleLibro extends Component {
   componentDidMount() {
     this.props.fetchDetalleLibro(this.props.route.params.idLibro);
+    this.unsubscribeAuth = this.props.checkAuthState();
   }
 
+  componentDidUpdate() {
+    this.unsubscribeAuth = this.props.checkAuthState();
+  }
+
+  componentWillUnmount() {
+    if (this.unsubscribeAuth) {
+      this.unsubscribeAuth();
+    }
+  }
+  constructor(props) {
+    super(props);
+    this.state = {
+      showModal: false,
+    };
+    this.toggleModal = this.toggleModal.bind(this);
+    this.closeModal = this.closeModal.bind(this);
+  }
+  toggleModal() {
+    this.setState({ showModal: !this.state.showModal });
+  }
+  closeModal() {
+    this.setState({ showModal: false });
+  }
   render() {
     const { navigate } = this.props.navigation;
-    const { libro, loading, error } = this.props;
+    const { libro, loading, error, isAuthenticated } = this.props;
 
     if (loading) {
       return <IndicadorActividad />;
@@ -129,7 +170,61 @@ class DetalleLibro extends Component {
 
     return (
       <ScrollView style={{ backgroundColor: colorAmarilloClaro }}>
-        <InfoLibro navigate={navigate} libro={libro} />
+        <InfoLibro
+          navigate={navigate}
+          toggleModal={this.toggleModal}
+          isAuthenticated={isAuthenticated}
+          libro={libro}
+        />
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={this.state.showModal}
+          onRequestClose={this.closeModal}>
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+            }}>
+            <View
+              style={{
+                backgroundColor: colorAmarilloClaro,
+                padding: 20,
+                borderRadius: 10,
+              }}>
+              <TouchableOpacity
+                onPress={this.closeModal}
+                style={{
+                  position: "absolute",
+                  right: 5,
+                  top: 5,
+                }}>
+                <Icon name="times" type="font-awesome" size={20} />
+              </TouchableOpacity>
+              <Text style={styles.texto}>
+                Debes iniciar sesión para acceder a este sitio
+              </Text>
+              <View>
+                <TouchableOpacity
+                  style={styles.boton}
+                  onPress={() => navigate("Iniciar Sesión")}>
+                  <View style={{ flex: 1, alignItems: "center" }}>
+                    <Text style={styles.texto}>Iniciar Sesion</Text>
+                  </View>
+                  <Icon
+                    name="arrow-right"
+                    type="font-awesome"
+                    size={20}
+                    color={colorAzul}
+                    style={{ margin: 5 }}
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
       </ScrollView>
     );
   }

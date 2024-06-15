@@ -17,6 +17,7 @@ import Registro from "./RegistroComponent";
 import Logout from "./LogoutComponent";
 import Biblioteca from "./BibliotecaComponent";
 import DetalleLibro from "./DetalleLibroComponent";
+import Discusion from "./DiscusionComponent";
 
 const mapStateToProps = (state) => ({
   isAuthenticated: state.autenticacion.isAuthenticated,
@@ -155,9 +156,23 @@ function BibliotecaNavegador({ navigation }) {
       />
       <Stack.Screen
         name="Discusion"
-        component={Falso}
+        component={Discusion}
         options={{
           title: "Discusion",
+        }}
+      />
+      <Stack.Screen
+        name="Valoraciones"
+        component={Falso}
+        options={{
+          title: "Valoraciones",
+        }}
+      />
+      <Stack.Screen
+        name="EscribirMensaje"
+        component={Falso}
+        options={{
+          title: "Escribir mensaje",
         }}
       />
     </Stack.Navigator>
