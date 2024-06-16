@@ -68,7 +68,6 @@ class Comentarios extends Component {
     const { isAuthenticated, comentarios, loading, error, user } = this.props;
     const { idLibro } = this.props.route.params;
 
-    console.log('Comentarios: ', user.displayName);
     if (!isAuthenticated) {
       this.props.navigation.reset({
         index: 0,
