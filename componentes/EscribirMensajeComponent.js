@@ -66,7 +66,7 @@ class EscribirMensaje extends Component {
             multiline={true}
             numberOfLines={4}
           />
-          {isValoracion && (
+          {isComentario && (
             <Rating
               showRating
               onFinishRating={this.ratingCompleted}
