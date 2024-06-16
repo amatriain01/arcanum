@@ -24,6 +24,7 @@ import { IndicadorActividad } from "./IndicadorActividadComponent";
 
 const mapStateToProps = (state) => ({
   isAuthenticated: state.autenticacion.isAuthenticated,
+  user: state.autenticacion.user,
   comentarios: state.comentarios.comentarios,
   error: state.comentarios.errMess,
   loading: state.comentarios.loading
@@ -47,13 +48,6 @@ class Comentarios extends Component {
   componentDidMount() {
     this.props.fetchComentarios(this.props.route.params.idLibro);
     this.unsubscribeAuth = this.props.checkAuthState();
-    if (this.props.comentarios.length === 0 && this.props.loading === false) {
-      this.setState({ showModal: true });
-    };
-  }
-
-  componentDidUpdate() {
-    this.unsubscribeAuth = this.props.checkAuthState();
   }
 
   componentWillUnmount() {
@@ -71,17 +65,16 @@ class Comentarios extends Component {
 
   render() {
     const { navigate } = this.props.navigation;
-    const { isAuthenticated, comentarios, loading, error } = this.props;
+    const { isAuthenticated, comentarios, loading, error, user } = this.props;
     const { idLibro } = this.props.route.params;
 
+    console.log('Comentarios: ', user.displayName);
     if (!isAuthenticated) {
       this.props.navigation.reset({
         index: 0,
         routes: [{ name: "Inicio" }],
       });
     }
-
-    const nombreUsuario = "Juan Perez"; //¿Se podría oberner de redux?
 
     const miComentario = (nombreComentario, nombreUsuario) => {
       if (nombreComentario === nombreUsuario) {
@@ -105,7 +98,6 @@ class Comentarios extends Component {
         </View>
       );
     }
-    console.log(comentarios);
 
     function formatDate(dateString) {
       var date = new Date(dateString.replace(/\s/g, ''));
@@ -126,7 +118,7 @@ class Comentarios extends Component {
           bottomDivider>
           <View
             style={{
-              backgroundColor: miComentario(item.nombre, nombreUsuario),
+              backgroundColor: miComentario(item.nombre, user.displayName),
               padding: 20,
               width: "100%",
               borderRadius: 10,
@@ -179,7 +171,7 @@ class Comentarios extends Component {
         <Modal
           animationType="slide"
           transparent={true}
-          visible={this.state.showModal}
+          visible={(comentarios.length === 0) || this.state.showModal}
           onRequestClose={this.closeModal}>
           <View
             style={{

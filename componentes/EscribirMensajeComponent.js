@@ -1,38 +1,65 @@
-import { Icon } from "@rneui/themed";
 import { Component } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Input, Rating } from "react-native-elements";
 import { connect } from "react-redux";
 import { colorAmarilloClaro, colorAzul, colorAzulClaro } from "../app.config";
 import { Button } from "@rneui/base";
+import { checkAuthState } from "../redux/actions/autenticacion";
+import { postComentario } from "../redux/actions/comentarios";
+import { postDiscusion } from "../redux/actions/discusiones";
+import { fetchComentarios } from "../redux/actions/comentarios";
 
 const mapStateToProps = (state) => ({
   isAuthenticated: state.autenticacion.isAuthenticated,
+  user: state.autenticacion.user,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   checkAuthState: () => dispatch(checkAuthState()),
+  postComentario: (comentario) => dispatch(postComentario(comentario)),
+  fetchComentarios: (idLibro) => dispatch(fetchComentarios(idLibro)),
+  postDiscusion: (discusion) => dispatch(postDiscusion(discusion)),
 });
 
 class EscribirMensaje extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      valoracion: 5,
-      comentario: "",
+      valoracion: 3,
+      texto: "",
       showModal: false,
     };
+    this.handleTexto = this.handleTexto.bind(this);
+    this.ratingCompleted = this.ratingCompleted.bind(this);
     this.resetForm = this.resetForm.bind(this);
     this.gestionarComentario = this.gestionarComentario.bind(this);
     this.volverAtras = this.volverAtras.bind(this);
+    this.isComentario = this.isComentario.bind(this);
+  }
+
+  componentDidMount() {
+    this.unsubscribeAuth = this.props.checkAuthState();
+  }
+
+  componentWillUnmount() {
+    if (this.unsubscribeAuth) {
+      this.unsubscribeAuth();
+    }
+    this.resetForm();
+  }
+
+  handleTexto = (texto) => {
+    this.setState({ texto });
+  }
+
+  ratingCompleted = (valoracion) => {
+    this.setState({ valoracion });
   }
 
   resetForm() {
     this.setState({
       valoracion: 3,
-      autor: "",
-      comentario: "",
-      dia: "",
+      texto: "",
       showModal: false,
     });
   }
@@ -42,31 +69,62 @@ class EscribirMensaje extends Component {
     this.props.navigation.goBack();
   }
 
+  isComentario() {
+    const { origen } = this.props.route.params || {};
+    return origen === "Comentarios";
+  }
+
   gestionarComentario() {
+    const { user } = this.props;
     const { idLibro } = this.props.route.params;
-    const { valoracion, comentario } = this.state;
-    const autor = "Yo"; //this.props.usuario.nombre; //Se cojera de redux
-    const dia = new Date().toISOString();
-    // if(isComentario) {
-    // this.props.postComentario(idLibro, valoracion, autor, comentario, dia);
-    // } else {
-    //   this.props.postDiscusion(idLibro, autor, comentario, dia);
-    // }
+    const { valoracion, texto } = this.state;
+
+    if (this.isComentario) {
+      if (user) {
+        const comentario = {
+          nombre: user.displayName,
+          fecha: new Date().toISOString(),
+          idLibro: idLibro,
+          idUsuario: user.uid,
+          valoracion: valoracion.toString(),
+          mensaje: texto
+        };
+        this.props.postComentario(comentario);
+        this.props.fetchComentarios(idLibro);
+      }
+    } else {
+      if (user) {
+        const comentario = {
+          idLibro: idLibro,
+          autor: user.displayName,
+          mensaje: texto,
+          fecha: new Date().toISOString(),
+        };
+        this.props.postDiscusion(comentario);
+      }
+    }
     this.volverAtras();
   }
 
   render() {
-    const { origen } = this.props.route.params || {};
-    const isComentario = origen === "Comentarios"; // true si se está escribiendo un mensaje en un Comentario, false si es discusion
+    const { texto, valoracion } = this.state;
+
     return (
       <View style={styles.container}>
         <View style={styles.contenedor}>
           <Input
-            placeholder="Escribe tu mensaje"
+            placeholder="Escribe tu comentario..."
             multiline={true}
-            numberOfLines={4}
+            numberOfLines={2}
+            value={texto}
+            inputStyle={{ padding: 10 }}
+            inputContainerStyle={{ padding: 10 }}
+            containerStyle={{ padding: 10 }}
+            style={{ padding: 10 }}
+            placeholderTextColor={colorAzul}
+            onChangeText={this.handleTexto}
           />
-          {isComentario && (
+          {this.isComentario && (
             <Rating
               showRating
               onFinishRating={this.ratingCompleted}
@@ -75,6 +133,7 @@ class EscribirMensaje extends Component {
               style={{ paddingVertical: 10 }}
               fractions={1}
               jumpValue={0.5}
+              startingValue={valoracion}
             />
           )}
           <View style={{ flexDirection: "row" }}>

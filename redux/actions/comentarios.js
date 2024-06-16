@@ -43,7 +43,7 @@ export const fetchComentarios = (idLibro) => {
 export const addComentario = (comentario) => ({
     type: ActionTypes.ADD_COMENTARIO,
     payload: comentario
-})
+});
 
 export const postComentario = (comentario) => {
     return async (dispatch) => {
