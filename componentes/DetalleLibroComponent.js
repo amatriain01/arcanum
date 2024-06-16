@@ -32,6 +32,17 @@ const mapDispatchToProps = (dispatch) => ({
   fetchDetalleLibro: (idLibro) => dispatch(fetchDetalleLibro(idLibro)),
 });
 
+function formatDate(dateString) {
+  var date = new Date(dateString.replace(/\s/g, ''));
+  var year = date.getFullYear();
+  var month = ('0' + (date.getMonth() + 1)).slice(-2);
+  var day = ('0' + date.getDate()).slice(-2);
+  var hours = ('0' + date.getHours()).slice(-2);
+  var minutes = ('0' + date.getMinutes()).slice(-2);
+  var seconds = ('0' + date.getSeconds()).slice(-2);
+  return day + '/' + month + '/' + year + ', ' + hours + ':' + minutes + ':' + seconds;
+}
+
 function InfoLibro(props) {
   const listadoEstados = [
     { key: 0, value: "Sin estado" },
@@ -61,7 +72,7 @@ function InfoLibro(props) {
             />
             <Text style={styles.texto}>Autor: {props.libro.autor}</Text>
             <Text style={styles.texto}>
-              Fecha de publicacion: {props.libro.fechaPublicacion}
+              Fecha de publicacion: {formatDate(props.libro.fechaPublicacion)}
             </Text>
             <View style={styles.ratingContainer}>
               <Text style={styles.texto}>
