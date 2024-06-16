@@ -172,13 +172,20 @@ class Discusion extends Component {
     } else {
       return (
         <SafeAreaView>
-          <SafeAreaView>
-            <FlatList
-              data={comentariosLibro}
-              renderItem={renderComentariosItem}
-              keyExtractor={(item) => item.id.toString()}
+          <View style={{ backgroundColor:colorAzul, paddingBottom:10}}>
+            <Icon
+              name="plus-circle"
+              type="font-awesome"
+              size={28}
+              color={colorAmarillo}
+              onPress={() => navigate("EscribirMensaje" , {libroId: libroId, origen: "Discusion"})}
             />
-          </SafeAreaView>
+          </View>
+          <FlatList
+            data={comentariosLibro}
+            renderItem={renderComentariosItem}
+            keyExtractor={(item) => item.id.toString()}
+          />
           <Modal
             animationType="slide"
             transparent={true}

@@ -50,7 +50,7 @@ function InfoLibro(props) {
       <Card containerStyle={styles.container}>
         <Card.Title style={styles.titulo}>{props.libro.titulo}</Card.Title>
         <View style={styles.cuerpo}>
-          <Card.Image source={props.libro.imagen} style={styles.imagen} />
+          <Card.Image source={{uri:props.libro.imagen}} style={styles.imagen} />
           <View style={styles.info}>
             <SelectList
               setSelected={(val) => setSelected(val)}
