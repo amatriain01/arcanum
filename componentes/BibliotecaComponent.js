@@ -47,9 +47,9 @@ class Biblioteca extends Component {
           containerStyle={styles.container}
           key={index}
           onPress={() => navigate("DetalleLibro", { idLibro: item.idLibro })}
-          bottomDivider>
+          bottomDivider >
           <LibroSimple libro={item} mostrarValidacion={true} />
-        </ListItem>
+        </ListItem >
       );
     };
 
@@ -60,7 +60,7 @@ class Biblioteca extends Component {
           renderItem={renderBibliotecaItem}
           keyExtractor={(item) => item.idLibro.toString()}
         />
-      </SafeAreaView>
+      </SafeAreaView >
     );
   }
 }

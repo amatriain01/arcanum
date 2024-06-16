@@ -107,7 +107,7 @@ const renderValoracionesItem = ({ item, index }) => {
 class Valoraciones extends Component {
   componentDidMount() {
     this.unsubscribeAuth = this.props.checkAuthState();
-    if(valoraciones.length === 0) {
+    if (valoraciones.length === 0) {
       this.setState({ showModal: true });
     };
   }
@@ -137,7 +137,7 @@ class Valoraciones extends Component {
   }
   render() {
     const { navigate } = this.props.navigation;
-    const { libroId } = this.props.route.params;
+    const { idLibro } = this.props.route.params;
     if (!this.props.isAuthenticated) {
       this.props.navigation.reset({
         index: 0,
@@ -154,7 +154,7 @@ class Valoraciones extends Component {
               color={colorAmarillo}
               onPress={() =>
                 navigate("EscribirMensaje", {
-                  libroId: libroId,
+                  idLibro: idLibro,
                   origen: "Valoracion",
                 })
               }
@@ -202,7 +202,7 @@ class Valoraciones extends Component {
                     buttonStyle={styles.yesButton}
                     onPress={() =>
                       navigate("EscribirMensaje", {
-                        libroId: libroId,
+                        idLibro: idLibro,
                         origen: "Valoracion",
                       })
                     }
@@ -211,7 +211,7 @@ class Valoraciones extends Component {
                     title="No"
                     buttonStyle={styles.noButton}
                     onPress={() =>
-                      navigate("DetalleLibro", { libroId: libroId })
+                      navigate("DetalleLibro", { idLibro: idLibro })
                     }
                   />
                 </View>

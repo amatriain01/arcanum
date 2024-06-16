@@ -22,26 +22,12 @@ const mapDispatchToProps = (dispatch) => ({
 
 function InfoLibro(props) {
   const listadoEstados = [
-    {
-      key: 0,
-      value: "Sin estado",
-    },
-    {
-      key: 1,
-      value: "Pendiente",
-    },
-    {
-      key: 2,
-      value: "Leyendo",
-    },
-    {
-      key: 3,
-      value: "Leído",
-    },
+    { key: 0, value: "Sin estado" },
+    { key: 1, value: "Pendiente" },
+    { key: 2, value: "Leyendo" },
+    { key: 3, value: "Leído" }
   ];
 
-  //Faltaría coger este valor de redux :)
-  const isAuthenticated = props.isAuthenticated;
   //Aqui sería que compruebe si ya hay uno y lo ponga y si no por defecto
   // estado != null ? estado : "Selecciona un estado"
   const [selected, setSelected] = useState("Selecciona un estado");
@@ -50,7 +36,7 @@ function InfoLibro(props) {
       <Card containerStyle={styles.container}>
         <Card.Title style={styles.titulo}>{props.libro.titulo}</Card.Title>
         <View style={styles.cuerpo}>
-          <Card.Image source={{uri:props.libro.imagen}} style={styles.imagen} />
+          <Card.Image source={{ uri: props.libro.imagen }} style={styles.imagen} />
           <View style={styles.info}>
             <SelectList
               setSelected={(val) => setSelected(val)}
@@ -77,8 +63,8 @@ function InfoLibro(props) {
             <TouchableOpacity
               style={styles.boton}
               onPress={() => {
-                if (isAuthenticated) {
-                  props.navigate("Discusion", { libroId: props.libroId });
+                if (props.isAuthenticated) {
+                  props.navigate("Discusion", { idLibro: props.libro.idLibro });
                 } else {
                   props.toggleModal();
                 }
@@ -99,8 +85,8 @@ function InfoLibro(props) {
             <TouchableOpacity
               style={styles.boton}
               onPress={() => {
-                if (isAuthenticated) {
-                  props.navigate("Valoraciones", { libroId: props.libroId });
+                if (props.isAuthenticated) {
+                  props.navigate("Valoraciones", { idLibro: props.libro.idLibro });
                 } else {
                   props.toggleModal();
                 }
@@ -124,8 +110,32 @@ function InfoLibro(props) {
 }
 
 class DetalleLibro extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      showModal: false,
+    };
+    this.toggleModal = this.toggleModal.bind(this);
+    this.closeModal = this.closeModal.bind(this);
+  }
+
+  toggleModal() {
+    this.setState({ showModal: !this.state.showModal });
+  }
+
+  closeModal() {
+    this.setState({ showModal: false });
+  }
+
   componentDidMount() {
-    this.props.fetchDetalleLibro(this.props.route.params.idLibro);
+    const { idLibro } = this.props.route.params;
+
+    if (idLibro) {
+      this.props.fetchDetalleLibro(idLibro);
+    }
+    this.focusListener = this.props.navigation.addListener('focus', () => {
+      this.props.fetchDetalleLibro(idLibro);
+    });
     this.unsubscribeAuth = this.props.checkAuthState();
   }
 
@@ -137,26 +147,16 @@ class DetalleLibro extends Component {
     if (this.unsubscribeAuth) {
       this.unsubscribeAuth();
     }
+    if (this.focusListener) {
+      this.focusListener();
+    }
   }
-  constructor(props) {
-    super(props);
-    this.state = {
-      showModal: false,
-    };
-    this.toggleModal = this.toggleModal.bind(this);
-    this.closeModal = this.closeModal.bind(this);
-  }
-  toggleModal() {
-    this.setState({ showModal: !this.state.showModal });
-  }
-  closeModal() {
-    this.setState({ showModal: false });
-  }
+
   render() {
     const { navigate } = this.props.navigation;
     const { libro, loading, error, isAuthenticated } = this.props;
 
-    if (loading) {
+    if (loading || !libro) {
       return <IndicadorActividad />;
     }
 

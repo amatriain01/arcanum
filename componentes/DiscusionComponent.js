@@ -136,7 +136,7 @@ const renderComentariosItem = ({ item, index }) => {
 class Discusion extends Component {
   componentDidMount() {
     this.unsubscribeAuth = this.props.checkAuthState();
-    if(comentariosLibro.length === 0) {
+    if (comentariosLibro.length === 0) {
       this.setState({ showModal: true });
     };
   }
@@ -166,7 +166,7 @@ class Discusion extends Component {
   }
   render() {
     const { navigate } = this.props.navigation;
-    const { libroId } = this.props.route.params;
+    const { idLibro } = this.props.route.params;
     if (!this.props.isAuthenticated) {
       this.props.navigation.reset({
         index: 0,
@@ -174,14 +174,14 @@ class Discusion extends Component {
       });
     } else {
       return (
-        <SafeAreaView  style={styles.container}>
-          <View style={{ backgroundColor:colorAzul, paddingBottom:10}}>
+        <SafeAreaView style={styles.container}>
+          <View style={{ backgroundColor: colorAzul, paddingBottom: 10 }}>
             <Icon
               name="plus-circle"
               type="font-awesome"
               size={28}
               color={colorAmarillo}
-              onPress={() => navigate("EscribirMensaje" , {libroId: libroId, origen: "Discusion"})}
+              onPress={() => navigate("EscribirMensaje", { idLibro: idLibro, origen: "Discusion" })}
             />
           </View>
           <FlatList
@@ -226,7 +226,7 @@ class Discusion extends Component {
                     buttonStyle={styles.yesButton}
                     onPress={() =>
                       navigate("EscribirMensaje", {
-                        libroId: libroId,
+                        idLibro: idLibro,
                         origen: "Discusion",
                       })
                     }
@@ -235,7 +235,7 @@ class Discusion extends Component {
                     title="No"
                     buttonStyle={styles.noButton}
                     onPress={() =>
-                      navigate("DetalleLibro", { libroId: libroId })
+                      navigate("DetalleLibro", { idLibro: idLibro })
                     }
                   />
                 </View>

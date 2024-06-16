@@ -43,14 +43,14 @@ class EscribirMensaje extends Component {
   }
 
   gestionarComentario() {
-    const { libroId } = this.props.route.params;
+    const { idLibro } = this.props.route.params;
     const { valoracion, comentario } = this.state;
     const autor = "Yo"; //this.props.usuario.nombre; //Se cojera de redux
     const dia = new Date().toISOString();
     // if(isValoracion) {
-    // this.props.postComentario(libroId, valoracion, autor, comentario, dia);
+    // this.props.postComentario(idLibro, valoracion, autor, comentario, dia);
     // } else {
-    //   this.props.postDiscusion(libroId, autor, comentario, dia);
+    //   this.props.postDiscusion(idLibro, autor, comentario, dia);
     // }
     this.volverAtras();
   }
