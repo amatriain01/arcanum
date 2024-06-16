@@ -1,7 +1,19 @@
 import { Component, useState } from "react";
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Modal } from "react-native";
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Modal,
+} from "react-native";
 import { Card, Icon } from "react-native-elements";
-import { colorAmarillo, colorAmarilloClaro, colorAzul, colorAzulClaro } from "../app.config";
+import {
+  colorAmarillo,
+  colorAmarilloClaro,
+  colorAzul,
+  colorAzulClaro,
+} from "../app.config";
 import { SelectList } from "react-native-dropdown-select-list";
 import { connect } from "react-redux";
 import { checkAuthState } from "../redux/actions/autenticacion";
@@ -48,8 +60,13 @@ function InfoLibro(props) {
               style={{ width: 300, color: colorAzul }}
             />
             <Text style={styles.texto}>Autor: {props.libro.autor}</Text>
+            <Text style={styles.texto}>
+              Fecha de publicacion: {props.libro.fechaPublicacion}
+            </Text>
             <View style={styles.ratingContainer}>
-              <Text style={styles.texto}>Puntuación: {props.libro.valoracion} </Text>
+              <Text style={styles.texto}>
+                Puntuación: {props.libro.valoracion}{" "}
+              </Text>
               <Icon
                 name="star"
                 type="font-awesome"
