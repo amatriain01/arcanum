@@ -75,8 +75,8 @@ class Comentarios extends Component {
       });
     }
 
-    const miComentario = (nombreComentario, nombreUsuario) => {
-      if (nombreComentario === nombreUsuario) {
+    const miComentario = (uidComentario, idUsuario) => {
+      if (uidComentario === idUsuario) {
         return colorAzulIntermedio;
       } else {
         return colorAzulClaro;
@@ -117,7 +117,7 @@ class Comentarios extends Component {
           bottomDivider>
           <View
             style={{
-              backgroundColor: miComentario(item.nombre, user.displayName),
+              backgroundColor: miComentario(item.idUsuario, user.uid),
               padding: 20,
               width: "100%",
               borderRadius: 10,
