@@ -73,7 +73,8 @@ class EscribirMensaje extends Component {
               tintColor={colorAzulClaro}
               ratingBackgroundColor={colorAmarilloClaro}
               style={{ paddingVertical: 10 }}
-              startingValue={5}
+              fractions={1}
+              jumpValue={0.5}
             />
           )}
           <View style={{ flexDirection: "row" }}>

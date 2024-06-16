@@ -6,18 +6,19 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
 } from "react-native";
 import { connect } from "react-redux";
-import { Button, ListItem } from "react-native-elements";
 import {
   colorAmarillo,
   colorAmarilloClaro,
   colorAzul,
   colorAzulClaro,
+  colorAzulIntermedio,
 } from "../app.config";
+import { View } from "react-native";
+import { Icon } from "@rneui/themed";
+import { Button, ListItem } from "react-native-elements";
 import { checkAuthState } from "../redux/actions/autenticacion";
-import { Icon } from "@rneui/base";
 
 const mapStateToProps = (state) => ({
   isAuthenticated: state.autenticacion.isAuthenticated,
@@ -26,100 +27,61 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
   checkAuthState: () => dispatch(checkAuthState()),
 });
-
-const comentariosLibro = [
+const valoraciones = [
   {
     id: 1,
-    nombre: "Juan Pérez",
-    fecha: "2024-06-01",
-    mensaje:
-      "¿Qué opinan del final del libro? Me pareció inesperado pero muy bien logrado.",
+    nombre: "Juan Perez",
+    puntuacion: 4.5,
+    mensaje: "Muy buen libro, lo recomiendo.",
+    fecha: "2024-01-15",
   },
   {
     id: 2,
-    nombre: "María Gómez",
-    fecha: "2024-06-02",
-    mensaje:
-      "A mí también me sorprendió el final. ¿Creen que habrá una secuela?",
+    nombre: "Ana Gomez",
+    puntuacion: 5,
+    mensaje: "Excelente lectura, me encantó.",
+    fecha: "2024-02-10",
   },
   {
     id: 3,
-    nombre: "Carlos Sánchez",
-    fecha: "2024-06-03",
-    mensaje:
-      "Creo que el desarrollo de los personajes principales fue excelente. ¿Alguien más piensa que el villano tenía motivos justificados?",
+    nombre: "Carlos Ruiz",
+    puntuacion: 3,
+    mensaje: "Es un libro aceptable, pero esperaba más.",
+    fecha: "2024-03-05",
   },
   {
     id: 4,
-    nombre: "Ana Rodríguez",
-    fecha: "2024-06-04",
-    mensaje:
-      "Yo no estoy tan segura de eso, me pareció que algunos de sus motivos eran un poco forzados.",
-  },
-  {
-    id: 5,
-    nombre: "Luis Fernández",
-    fecha: "2024-06-05",
-    mensaje:
-      "¿Qué les pareció la parte en la que el protagonista descubre su verdadero origen? Para mí, fue el mejor momento del libro.",
-  },
-  {
-    id: 6,
-    nombre: "Laura Méndez",
-    fecha: "2024-06-06",
-    mensaje:
-      "Ese momento fue increíble. Pero, ¿no les parece que el ritmo del libro decae un poco en la mitad?",
-  },
-  {
-    id: 7,
-    nombre: "Pedro López",
-    fecha: "2024-06-07",
-    mensaje:
-      "Sí, concuerdo. La mitad del libro se siente un poco lenta, aunque la construcción del mundo es fascinante.",
-  },
-  {
-    id: 8,
-    nombre: "Elena Díaz",
-    fecha: "2024-06-08",
-    mensaje:
-      "Totalmente de acuerdo. Además, me pareció que algunos personajes secundarios no se desarrollaron lo suficiente. ¿Qué piensan?",
-  },
-  {
-    id: 9,
-    nombre: "Ricardo Morales",
-    fecha: "2024-06-09",
-    mensaje:
-      "Estoy de acuerdo, algunos personajes secundarios eran interesantes, pero no tuvieron suficiente tiempo en la historia.",
-  },
-  {
-    id: 10,
-    nombre: "Sofía Jiménez",
-    fecha: "2024-06-10",
-    mensaje:
-      "¿Alguien notó las referencias a otras obras del autor? Me encantó encontrar esos pequeños detalles.",
+    nombre: "Maria Lopez",
+    puntuacion: 4,
+    mensaje: "Buena historia, personajes interesantes.",
+    fecha: "2024-04-20",
   },
 ];
-const numbreUsuario = "Juan Pérez"; //¿Se podría oberner de redux?
+const numbreUsuario = "Juan Perez"; //¿Se podría oberner de redux?
 
-const miComentario = (nombreComentario, nombreUsuario) => {
+const miValoracion = (nombreComentario, nombreUsuario) => {
   if (nombreComentario === nombreUsuario) {
-    return colorAmarillo;
+    return colorAzulIntermedio;
   } else {
-    return colorAmarilloClaro;
+    return colorAzulClaro;
   }
 };
 
-const renderComentariosItem = ({ item, index }) => {
+const renderValoracionesItem = ({ item, index }) => {
   return (
     <ListItem
-      containerStyle={styles.containerDiscusion}
+      containerStyle={styles.containerValoracion}
       key={index}
       bottomDivider>
       <View
         style={{
-          backgroundColor: miComentario(item.nombre, numbreUsuario),
+          backgroundColor: miValoracion(item.nombre, numbreUsuario),
           padding: 20,
           width: "100%",
+          borderRadius: 10,
+          borderWidth: 2,
+          borderStyle: "solid",
+          borderColor: colorAzul,
         }}>
         <View style={{ flexDirection: "row" }}>
           <View style={{ flex: 1 }}>
@@ -127,16 +89,25 @@ const renderComentariosItem = ({ item, index }) => {
           </View>
           <Text style={styles.fecha}>{item.fecha}</Text>
         </View>
+        <View style={styles.ratingContainer}>
+          <Text style={styles.texto}>{item.puntuacion}</Text>
+          <Icon
+            name="star"
+            type="font-awesome"
+            size={20}
+            color={colorAmarillo}
+          />
+        </View>
         <Text style={styles.texto}>{item.mensaje}</Text>
       </View>
     </ListItem>
   );
 };
 
-class Discusion extends Component {
+class Valoraciones extends Component {
   componentDidMount() {
     this.unsubscribeAuth = this.props.checkAuthState();
-    if(comentariosLibro.length === 0) {
+    if(valoraciones.length === 0) {
       this.setState({ showModal: true });
     };
   }
@@ -174,19 +145,24 @@ class Discusion extends Component {
       });
     } else {
       return (
-        <SafeAreaView  style={styles.container}>
-          <View style={{ backgroundColor:colorAzul, paddingBottom:10}}>
+        <SafeAreaView style={styles.container}>
+          <View style={{ backgroundColor: colorAzul, paddingBottom: 10 }}>
             <Icon
               name="plus-circle"
               type="font-awesome"
               size={28}
               color={colorAmarillo}
-              onPress={() => navigate("EscribirMensaje" , {libroId: libroId, origen: "Discusion"})}
+              onPress={() =>
+                navigate("EscribirMensaje", {
+                  libroId: libroId,
+                  origen: "Valoracion",
+                })
+              }
             />
           </View>
           <FlatList
-            data={comentariosLibro}
-            renderItem={renderComentariosItem}
+            data={valoraciones}
+            renderItem={renderValoracionesItem}
             keyExtractor={(item) => item.id.toString()}
           />
           <Modal
@@ -217,8 +193,8 @@ class Discusion extends Component {
                   <Icon name="times" type="font-awesome" size={20} />
                 </TouchableOpacity>
                 <Text style={styles.texto}>
-                  Actualmente no hay una discusión sobre este libro. ¿Deseas
-                  iniciar una?
+                  Actualmente no hay reseñas de este libro. ¿Deseas escribir
+                  una?
                 </Text>
                 <View style={styles.buttonContainer}>
                   <Button
@@ -227,7 +203,7 @@ class Discusion extends Component {
                     onPress={() =>
                       navigate("EscribirMensaje", {
                         libroId: libroId,
-                        origen: "Discusion",
+                        origen: "Valoracion",
                       })
                     }
                   />
@@ -251,19 +227,25 @@ class Discusion extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colorAzulClaro,
+    backgroundColor: colorAmarilloClaro,
     height: 200,
     justifyContent: "center",
   },
-  containerDiscusion: {
+  containerValoracion: {
     flexDirection: "column",
-    backgroundColor: colorAzulClaro,
+    backgroundColor: colorAmarilloClaro,
     minHeight: 100,
     width: "100%",
   },
+  ratingContainer: {
+    flexDirection: "row",
+    alignSelf: "flex-start",
+    paddingVertical: 5,
+    alignItems: "center",
+  },
   boton: {
     flexDirection: "row",
-    backgroundColor: colorAzul,
+    backgroundColor: colorAmarillo,
     margin: 10,
     padding: 10,
     borderRadius: 5,
@@ -290,4 +272,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Discusion);
+export default connect(mapStateToProps, mapDispatchToProps)(Valoraciones);
