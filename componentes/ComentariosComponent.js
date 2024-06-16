@@ -24,19 +24,15 @@ import { IndicadorActividad } from "./IndicadorActividadComponent";
 
 const mapStateToProps = (state) => ({
   isAuthenticated: state.autenticacion.isAuthenticated,
-  user: state.autenticacion.user,
   comentarios: state.comentarios.comentarios,
   error: state.comentarios.errMess,
-  loading: state.comentarios.loading,
+  loading: state.comentarios.loading
 });
 
 const mapDispatchToProps = (dispatch) => ({
   checkAuthState: () => dispatch(checkAuthState()),
-  fetchComentarios: () => dispatch(fetchComentarios())
+  fetchComentarios: (idLibro) => dispatch(fetchComentarios(idLibro))
 });
-
-const nombreUsuario = "Juan Perez"; //¿Se podría oberner de redux?
-
 
 class Comentarios extends Component {
   constructor(props) {
@@ -49,11 +45,11 @@ class Comentarios extends Component {
   }
 
   componentDidMount() {
+    this.props.fetchComentarios(this.props.route.params.idLibro);
     this.unsubscribeAuth = this.props.checkAuthState();
-    this.props.fetchComentarios();
-    // if (this.props.comentarios.length === 0) {
-    //   this.setState({ showModal: true });
-    // };
+    if (this.props.comentarios.length === 0 && this.props.loading === false) {
+      this.setState({ showModal: true });
+    };
   }
 
   componentDidUpdate() {
@@ -75,7 +71,7 @@ class Comentarios extends Component {
 
   render() {
     const { navigate } = this.props.navigation;
-    const { isAuthenticated, user, loading, comentarios, error } = this.props;
+    const { isAuthenticated, comentarios, loading, error } = this.props;
     const { idLibro } = this.props.route.params;
 
     if (!isAuthenticated) {
@@ -85,20 +81,7 @@ class Comentarios extends Component {
       });
     }
 
-    if (loading || comentarios.length === 0) {
-      console.log(comentarios);
-      return <IndicadorActividad />;
-    }
-
-    if (error) {
-      return (
-        <SafeAreaView style={styles.container}>
-          <Text style={styles.texto}>
-            Se ha producido un error al cargar los comentarios.
-          </Text>
-        </SafeAreaView>
-      );
-    }
+    const nombreUsuario = "Juan Perez"; //¿Se podría oberner de redux?
 
     const miComentario = (nombreComentario, nombreUsuario) => {
       if (nombreComentario === nombreUsuario) {
@@ -107,6 +90,22 @@ class Comentarios extends Component {
         return colorAzulClaro;
       }
     };
+
+    if (loading) {
+      return (
+        <IndicadorActividad />
+      );
+    }
+
+    if (error) {
+      console.log('Error: ', error);
+      return (
+        <View>
+          <Text>Error al cargar los comentarios.</Text>
+        </View>
+      );
+    }
+    console.log(comentarios);
 
     const renderComentariosItem = ({ item, index }) => {
       return (
@@ -131,7 +130,7 @@ class Comentarios extends Component {
               <Text style={styles.fecha}>{item.fecha}</Text>
             </View>
             <View style={styles.ratingContainer}>
-              <Text style={styles.texto}>{item.puntuacion}</Text>
+              <Text style={styles.texto}>{item.valoracion}</Text>
               <Icon
                 name="star"
                 type="font-awesome"

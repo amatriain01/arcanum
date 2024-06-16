@@ -16,7 +16,7 @@ export const comentariosError = (errMess) => ({
     payload: errMess
 });
 
-export const fetchComentarios = () => {
+export const fetchComentarios = (idLibro) => {
     return async (dispatch) => {
         dispatch(comentariosLoading());
 
@@ -25,11 +25,11 @@ export const fetchComentarios = () => {
             const snapshot = await get(comentariosRef);
             if (snapshot.exists()) {
                 const comentariosData = snapshot.val();
-                // const comentariosList = Object.keys(comentariosData)
-                //     .map(key => ({ idComentario: key, ...comentariosData[key] }))
-                //     .filter(comment => comment.idLibro === idLibro);
+                const comentariosList = Object.keys(comentariosData)
+                    .map(key => ({ idComentario: key, ...comentariosData[key] }))
+                    .filter(comment => comment.idLibro === idLibro);
 
-                dispatch(comentariosSuccess(comentariosData));
+                dispatch(comentariosSuccess(comentariosList));
             } else {
                 dispatch(comentariosError("No se encontraron comentarios en la base de datos"));
             }

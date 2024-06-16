@@ -19,4 +19,4 @@ export const comentarios = (state = initialState, action) => {
         default:
             return state;
     }
-};
+}
