@@ -47,7 +47,7 @@ class EscribirMensaje extends Component {
     const { valoracion, comentario } = this.state;
     const autor = "Yo"; //this.props.usuario.nombre; //Se cojera de redux
     const dia = new Date().toISOString();
-    // if(isValoracion) {
+    // if(isComentario) {
     // this.props.postComentario(idLibro, valoracion, autor, comentario, dia);
     // } else {
     //   this.props.postDiscusion(idLibro, autor, comentario, dia);
@@ -57,7 +57,7 @@ class EscribirMensaje extends Component {
 
   render() {
     const { origen } = this.props.route.params || {};
-    const isValoracion = origen === "Valoracion"; // true si se está escribiendo un mensaje en una valoracion, false si es discusion
+    const isComentario = origen === "Comentarios"; // true si se está escribiendo un mensaje en un Comentario, false si es discusion
     return (
       <View style={styles.container}>
         <View style={styles.contenedor}>

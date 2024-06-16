@@ -103,7 +103,7 @@ function InfoLibro(props) {
               style={styles.boton}
               onPress={() => {
                 if (props.isAuthenticated) {
-                  props.navigate("Valoraciones", { idLibro: props.libro.idLibro });
+                  props.navigate("Comentarios", { idLibro: props.libro.idLibro });
                 } else {
                   props.toggleModal();
                 }

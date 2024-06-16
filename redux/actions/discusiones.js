@@ -31,7 +31,7 @@ export const fetchDiscusiones = (idLibro) => {
 
                 dispatch(discusionesSuccess(discusionesList));
             } else {
-                dispatch(discusionesError("No se encontraron discusiones para este libro"));
+                dispatch(discusionesError("No se encontraron discusiones en la base de datos"));
             }
         } catch (error) {
             dispatch(discusionesError(error.message));

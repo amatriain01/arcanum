@@ -19,7 +19,7 @@ import Biblioteca from "./BibliotecaComponent";
 import DetalleLibro from "./DetalleLibroComponent";
 import Discusion from "./DiscusionComponent";
 import EscribirMensaje from "./EscribirMensajeComponent";
-import Valoraciones from "./ValoracionesComponent";
+import Comentarios from "./ComentariosComponent";
 
 const mapStateToProps = (state) => ({
   isAuthenticated: state.autenticacion.isAuthenticated,
@@ -164,10 +164,10 @@ function BibliotecaNavegador({ navigation }) {
         }}
       />
       <Stack.Screen
-        name="Valoraciones"
-        component={Valoraciones}
+        name="Comentarios"
+        component={Comentarios}
         options={{
-          title: "Valoraciones",
+          title: "Comentarios",
         }}
       />
       <Stack.Screen

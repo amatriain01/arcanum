@@ -53,10 +53,8 @@ export const detalleLibroError = (errMess) => ({
 export const fetchDetalleLibro = (idLibro) => {
     return async (dispatch) => {
         dispatch(detalleLibroLoading());
-        console.log(idLibro);
 
         try {
-            console.log(idLibro);
             const libroRef = ref(db, `libros/${idLibro}`);
             const snapshot = await get(libroRef);
             if (snapshot.exists()) {
