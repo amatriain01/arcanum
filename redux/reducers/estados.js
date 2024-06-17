@@ -24,30 +24,31 @@ export const estados = (state = initialState, action) => {
             return {
                 ...state,
                 loading: false,
-                [action.payload.listName]: [...state[action.payload.listName], action.payload.libro]
+                [action.payload.listName]: [...state[action.payload.listName], action.payload.idLibro]
             };
 
         case ActionTypes.REMOVE_LIBRO_ESTADOS_SUCCESS:
             return {
                 ...state,
                 loading: false,
-                [action.payload.listName]: state[action.payload.listName].filter(libro => libro.id !== action.payload.libroId)
+                [action.payload.listName]: state[action.payload.listName].filter(id => id !== action.payload.idLibro)
             };
 
         case ActionTypes.MOVE_LIBRO_ESTADOS_SUCCESS:
-            const { fromList, toList, libro } = action.payload;
             return {
                 ...state,
                 loading: false,
-                [fromList]: state[fromList].filter(b => b.id !== libro.id),
-                [toList]: [...state[toList], libro]
+                [action.payload.fromList]: state[action.payload.fromList].filter(id => id !== action.payload.idLibro),
+                [action.payload.toList]: [...state[action.payload.toList], action.payload.idLibro]
             };
 
         case ActionTypes.FETCH_LIBROS_ESTADOS_SUCCESS:
             return {
                 ...state,
                 loading: false,
-                ...action.payload
+                leyendo: action.payload.leyendo,
+                leido: action.payload.leido,
+                pendiente: action.payload.pendiente
             };
 
         case ActionTypes.ADD_LIBRO_ESTADOS_ERROR:
