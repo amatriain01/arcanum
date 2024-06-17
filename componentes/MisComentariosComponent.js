@@ -49,7 +49,15 @@ class MisComentarios extends Component {
     });
     this.props.fetchLibrosPorIds(idLibros);
   }
-
+  componentDidUpdate(prevProps) {
+    let idLibros = [];
+    if (this.props.comentarios !== prevProps.comentarios) {
+      this.props.comentarios.forEach((comentario) => {
+        idLibros.push(comentario.idLibro);
+      });
+      this.props.fetchLibrosPorIds(idLibros);
+    }
+  }
   componentWillUnmount() {
     if (this.unsubscribeAuth) {
       this.unsubscribeAuth();
@@ -57,8 +65,8 @@ class MisComentarios extends Component {
   }
   render() {
     const { navigate } = this.props.navigation;
-    const { isAuthenticated, comentarios, loading, error, user, libros } =
-      this.props;
+    const { comentarios, loading, error, libros } = this.props;
+    console.log("Comentarios: ", libros);
 
     if (loading) {
       return <IndicadorActividad />;

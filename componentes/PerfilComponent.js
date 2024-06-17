@@ -15,12 +15,12 @@ import {
 } from "../app.config";
 import Avatar from "./AvatarComponent";
 import { Button, Icon } from "react-native-elements";
-import { fetchLibros } from "../redux/actions/libros";
 import { IndicadorActividad } from "./IndicadorActividadComponent";
 import { checkAuthState } from "../redux/actions/autenticacion";
 import { fetchComentariosUsuario } from "../redux/actions/comentarios";
 import { fetchDiscusionesUsuario } from "../redux/actions/discusiones";
 import { fetchLibrosEstados } from "../redux/actions/estados";
+import BotonPerfil from "./BotonPerfilComponent";
 
 const mapStateToProps = (state) => ({
   user: state.autenticacion.user,
@@ -50,7 +50,6 @@ const mapDispatchToProps = (dispatch) => ({
 });
 class Perfil extends Component {
   componentDidMount() {
-    this.props.fetchLibros();
     this.unsubscribeAuth = this.props.checkAuthState();
     this.props.fetchComentariosUsuario(this.props.user.uid);
     this.props.fetchDiscusionesUsuario(this.props.user.uid);
@@ -66,72 +65,38 @@ class Perfil extends Component {
   }
   render() {
     const { navigate } = this.props.navigation;
-    const { user, comentarios, discusiones, loading, loadingComentarios, loadingDiscusiones, error, errorComentarios, errorDiscusiones, leyendo, leido, pendiente, errorEstados, loadingEstados } = this.props;
+    const {
+      user,
+      comentarios,
+      discusiones,
+      loading,
+      loadingComentarios,
+      loadingDiscusiones,
+      error,
+      errorComentarios,
+      errorDiscusiones,
+      leyendo,
+      leido,
+      pendiente,
+      errorEstados,
+      loadingEstados,
+    } = this.props;
 
     if (loading || loadingComentarios || loadingDiscusiones || loadingEstados) {
       return <IndicadorActividad />;
     }
 
     if (error || errorComentarios || errorDiscusiones || errorEstados) {
-      console.log("Error: ", error, errorComentarios, errorDiscusiones, errorEstados);
+      console.log(
+        "Error: ",
+        error,
+        errorComentarios,
+        errorDiscusiones,
+        errorEstados
+      );
       return (
         <View>
           <Text>Error al cargar el Perfil.</Text>
-        </View>
-      );
-    }
-    function Boton(props) {
-      if (props.data === undefined || props.data.length === undefined) {
-        props.data.length = 0;
-      }
-      let idLibros = [];
-      if (!props.isComentarios && props.data.length !== 0) {
-        props.data.forEach((libro) => {
-          idLibros.push(libro.idLibro);
-        });
-      }
-      return (
-        <View>
-          <TouchableOpacity
-            style={styles.boton}
-            onPress={() => {
-              if (props.data.length === 0) {
-                alert("No hay información disponible.");
-              } else {
-                props.isComentarios
-                  ? navigate("MisComentarios")
-                  : navigate("BibliotecaFiltrada", {
-                    estado: props.titulo,
-                    idLibros: idLibros,
-                  });
-              }
-            }}>
-            <View
-              style={{ flex: 1, flexDirection: "row", alignItems: "center" }}>
-              <Icon
-                name={props.icono}
-                type="font-awesome"
-                size={30}
-                color={colorAzul}
-              />
-              <Text
-                style={{
-                  fontSize: 20,
-                  fontWeight: "bold",
-                  color: colorAzul,
-                  marginLeft: 10,
-                }}>
-                {props.titulo} ({props.data.length})
-              </Text>
-            </View>
-            <Icon
-              name="arrow-right"
-              type="font-awesome"
-              size={20}
-              color={colorAzul}
-              style={{ margin: 5 }}
-            />
-          </TouchableOpacity>
         </View>
       );
     }
@@ -148,22 +113,43 @@ class Perfil extends Component {
           </View>
         </View>
         <View>
-          <Boton titulo={"Leidos"} icono={"check"} data={leido} />
+          <BotonPerfil
+            titulo={"Leidos"}
+            icono={"check"}
+            data={leido}
+            navigate={this.props.navigation.navigate}
+          />
         </View>
         <View>
-          <Boton titulo={"Pendientes"} icono={"clock-o"} data={pendiente} />
+          <BotonPerfil
+            titulo={"Pendientes"}
+            icono={"clock-o"}
+            data={pendiente}
+            navigate={this.props.navigation.navigate}
+          />
         </View>
         <View>
-          <Boton titulo={"Leyendo"} icono={"book"} data={leyendo} />
+          <BotonPerfil
+            titulo={"Leyendo"}
+            icono={"book"}
+            data={leyendo}
+            navigate={this.props.navigation.navigate}
+          />
         </View>
         <View>
-          <Boton titulo={"Discusiones"} icono={"comment"} data={discusiones} />
+          <BotonPerfil
+            titulo={"Discusiones"}
+            icono={"comment"}
+            data={discusiones}
+            navigate={this.props.navigation.navigate}
+          />
         </View>
         <View>
-          <Boton
+          <BotonPerfil
             titulo={"Mis Comentarios"}
             icono={"star"}
             data={comentarios}
+            navigate={this.props.navigation.navigate}
             isComentarios={true}
           />
         </View>
