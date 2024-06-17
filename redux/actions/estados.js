@@ -41,9 +41,9 @@ export const fetchLibrosEstados = (idUsuario, listName) => {
 const createEstadosDefault = async (idUsuario) => {
     const estadosRef = ref(db, `estados/${idUsuario}`);
     await set(estadosRef, {
-        leido: { "1": 1 },
-        leyendo: { "1": 1 },
-        pendiente: { "1": 1 }
+        Leido: { "1": 1 },
+        Leyendo: { "1": 1 },
+        Pendiente: { "1": 1 }
     });
 }
 
