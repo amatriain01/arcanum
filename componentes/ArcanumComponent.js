@@ -44,7 +44,7 @@ function CustomDrawerContent(props) {
         <View style={styles.drawerHeader}>
           <View style={{ flex: 1 }}>
             <Image
-              source={require("./imagenes/logo.png")}
+              source={require("../assets/logo.png")}
               style={styles.drawerImage}
             />
           </View>
@@ -132,7 +132,7 @@ function LoginNavegador({ navigation }) {
 function BibliotecaNavegador({ navigation }) {
   return (
     <Stack.Navigator
-      initialRouteName="BibliotecaInicial"
+      initialRouteName="BibliotecaInicio"
       screenOptions={{
         headerMode: "screen",
         headerTintColor: colorAmarillo,
@@ -142,7 +142,7 @@ function BibliotecaNavegador({ navigation }) {
         lazy: false,
       }}>
       <Stack.Screen
-        name="BibliotecaInicial"
+        name="BibliotecaInicio"
         component={Biblioteca}
         options={{
           title: "Biblioteca",
@@ -166,7 +166,7 @@ function BibliotecaNavegador({ navigation }) {
               name="arrow-back"
               size={28}
               color={colorAmarillo}
-              onPress={() => navigation.goBack()}
+              onPress={() => navigation.navigate('BibliotecaInicio')}
             />
           ),
         })}
@@ -335,7 +335,7 @@ function DrawerNavegador(props) {
       <Drawer.Screen
         name="Biblioteca"
         component={BibliotecaNavegador}
-        initialParams={{ screen: "BibliotecaInicial" }}
+        initialParams={{ screen: "BibliotecaIncio" }}
         options={{
           drawerIcon: ({ tintColor }) => (
             <Icon name="book" type="font-awesome" size={24} color={tintColor} />

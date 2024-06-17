@@ -87,7 +87,7 @@ class Logout extends Component {
                 <View style={styles.formContainer}>
                     <Image
                         style={styles.image}
-                        source={require("./imagenes/logo.png")}
+                        source={require("../assets/logo.png")}
                     />
                     <View style={styles.form}>
                         {showLogoutConfirmation ? (
