@@ -6,9 +6,9 @@ export const librosEstadosLoading = () => ({
     type: ActionTypes.FETCH_LIBROS_ESTADOS_LOADING
 });
 
-export const librosEstadosSuccess = (libros) => ({
+export const librosEstadosSuccess = (idsLibros) => ({
     type: ActionTypes.FETCH_LIBROS_ESTADOS_SUCCESS,
-    payload: libros
+    payload: idsLibros
 });
 
 export const librosEstadosError = (errMess) => ({
@@ -16,32 +16,35 @@ export const librosEstadosError = (errMess) => ({
     payload: errMess
 });
 
-export const fetchLibrosEstados = (idUsuario) => {
+export const fetchLibrosEstados = (idUsuario, listName) => {
     return async (dispatch) => {
         dispatch(librosEstadosLoading());
 
         try {
-            const librosRef = ref(db, `estados/${idUsuario}`);
+            const librosRef = ref(db, `estados/${idUsuario}/${listName}`);
             const snapshot = await get(librosRef);
             if (snapshot.exists()) {
                 const librosData = snapshot.val();
-                dispatch(librosEstadosSuccess(librosData));
+                const idsLibros = Object.keys(librosData);
+                dispatch(librosEstadosSuccess(idsLibros));
             } else {
                 dispatch(librosEstadosError("No se encontraron libros en la base de datos"));
             }
-        } catch (error) {
+        }
+        catch (error) {
             dispatch(librosEstadosError(error.message));
         }
-    };
-};
+    }
+}
+
 
 export const addLibroEstadosLoading = () => ({
     type: ActionTypes.ADD_LIBRO_ESTADOS_LOADING
 });
 
-export const addLibroEstadosSuccess = (listName, libro) => ({
+export const addLibroEstadosSuccess = (listName, idLibro) => ({
     type: ActionTypes.ADD_LIBRO_ESTADOS_SUCCESS,
-    payload: { listName, libro }
+    payload: { listName, idLibro }
 });
 
 export const addLibroEstadosError = (errMess) => ({
@@ -49,20 +52,20 @@ export const addLibroEstadosError = (errMess) => ({
     payload: errMess
 });
 
-export const addLibroEstados = (idUsuario, listName, libro) => {
+export const addLibroEstados = (idUsuario, listName, idlibro) => {
     return async (dispatch) => {
         dispatch(addLibroEstadosLoading());
 
         try {
-            const librosRef = ref(db, `estados/${idUsuario}/${listName}`);
-            const newLibroRef = push(librosRef);
-            await set(newLibroRef, libro);
-            dispatch(addLibroEstadosSuccess(listName, { ...libro, idLibro: newLibroRef.key }));
+            const newLibroRef = ref(db, `estados/${idUsuario}/${listName}/${idlibro}`);
+            await set(newLibroRef, idlibro);
+            dispatch(addLibroEstadosSuccess(listName, idlibro));
         } catch (error) {
             dispatch(addLibroEstadosError(error.message));
         }
     };
-};
+}
+
 
 export const removeLibroEstadosLoading = () => ({
     type: ActionTypes.REMOVE_LIBRO_ESTADOS_LOADING
@@ -89,16 +92,16 @@ export const removeLibroEstados = (idUsuario, listName, idLibro) => {
         } catch (error) {
             dispatch(removeLibroEstadosError(error.message));
         }
-    };
-};
+    }
+}
 
 export const moveLibroEstadosLoading = () => ({
     type: ActionTypes.MOVE_LIBRO_ESTADOS_LOADING
 });
 
-export const moveLibroEstadosSuccess = (fromList, toList, libro) => ({
+export const moveLibroEstadosSuccess = (fromList, toList, idLibro) => ({
     type: ActionTypes.MOVE_LIBRO_ESTADOS_SUCCESS,
-    payload: { fromList, toList, libro }
+    payload: { fromList, toList, idLibro }
 });
 
 export const moveLibroEstadosError = (errMess) => ({
@@ -111,19 +114,13 @@ export const moveLibroEstados = (idUsuario, fromList, toList, idLibro) => {
         dispatch(moveLibroEstadosLoading());
 
         try {
-            const libroRef = ref(db, `estados/${idUsuario}/${fromList}/${idLibro}`);
-            const libroSnapshot = await get(libroRef);
-            if (libroSnapshot.exists()) {
-                const libro = libroSnapshot.val();
-                const newLibroRef = ref(db, `estados/${idUsuario}/${toList}/${idLibro}`);
-                await set(newLibroRef, libro);
-                await remove(libroRef);
-                dispatch(moveLibroEstadosSuccess(fromList, toList, { ...libro, idLibro: idLibro }));
-            } else {
-                dispatch(moveLibroEstadosError("El libro no existe en la lista de origen"));
-            }
+            const fromRef = ref(db, `estados/${idUsuario}/${fromList}/${idLibro}`);
+            const toRef = ref(db, `estados/${idUsuario}/${toList}/${idLibro}`);
+            await remove(fromRef);
+            await set(toRef, idLibro);
+            dispatch(moveLibroEstadosSuccess(fromList, toList, idLibro));
         } catch (error) {
             dispatch(moveLibroEstadosError(error.message));
         }
-    };
-};
+    }
+}
