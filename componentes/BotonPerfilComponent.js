@@ -11,7 +11,7 @@ import {
 const BotonPerfil = (props) => {
   const { navigate } = props;
   let length = 0;
-  if (props.data !== undefined || props.data.length !== undefined) {
+  if (props.data !== undefined && props.data.length !== undefined) {
     length = props.data.length;
   }
   let idLibros = [];
