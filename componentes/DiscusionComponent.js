@@ -16,151 +16,25 @@ import {
   colorAzul,
   colorAzulClaro,
 } from "../app.config";
-import { checkAuthState } from "../redux/actions/autenticacion";
 import { Icon } from "@rneui/base";
+import { checkAuthState } from "../redux/actions/autenticacion";
+import { fetchDiscusiones } from "../redux/actions/discusiones";
+import { IndicadorActividad } from "./IndicadorActividadComponent";
 
 const mapStateToProps = (state) => ({
   isAuthenticated: state.autenticacion.isAuthenticated,
+  user: state.autenticacion.user,
+  discusiones: state.discusiones.discusiones,
+  error: state.discusiones.errMess,
+  loading: state.discusiones.loading
 });
 
 const mapDispatchToProps = (dispatch) => ({
   checkAuthState: () => dispatch(checkAuthState()),
+  fetchDiscusiones: (idLibro) => dispatch(fetchDiscusiones(idLibro))
 });
 
-const comentariosLibro = [
-  {
-    id: 1,
-    nombre: "Juan Pérez",
-    fecha: "2024-06-01",
-    mensaje:
-      "¿Qué opinan del final del libro? Me pareció inesperado pero muy bien logrado.",
-  },
-  {
-    id: 2,
-    nombre: "María Gómez",
-    fecha: "2024-06-02",
-    mensaje:
-      "A mí también me sorprendió el final. ¿Creen que habrá una secuela?",
-  },
-  {
-    id: 3,
-    nombre: "Carlos Sánchez",
-    fecha: "2024-06-03",
-    mensaje:
-      "Creo que el desarrollo de los personajes principales fue excelente. ¿Alguien más piensa que el villano tenía motivos justificados?",
-  },
-  {
-    id: 4,
-    nombre: "Ana Rodríguez",
-    fecha: "2024-06-04",
-    mensaje:
-      "Yo no estoy tan segura de eso, me pareció que algunos de sus motivos eran un poco forzados.",
-  },
-  {
-    id: 5,
-    nombre: "Luis Fernández",
-    fecha: "2024-06-05",
-    mensaje:
-      "¿Qué les pareció la parte en la que el protagonista descubre su verdadero origen? Para mí, fue el mejor momento del libro.",
-  },
-  {
-    id: 6,
-    nombre: "Laura Méndez",
-    fecha: "2024-06-06",
-    mensaje:
-      "Ese momento fue increíble. Pero, ¿no les parece que el ritmo del libro decae un poco en la mitad?",
-  },
-  {
-    id: 7,
-    nombre: "Pedro López",
-    fecha: "2024-06-07",
-    mensaje:
-      "Sí, concuerdo. La mitad del libro se siente un poco lenta, aunque la construcción del mundo es fascinante.",
-  },
-  {
-    id: 8,
-    nombre: "Elena Díaz",
-    fecha: "2024-06-08",
-    mensaje:
-      "Totalmente de acuerdo. Además, me pareció que algunos personajes secundarios no se desarrollaron lo suficiente. ¿Qué piensan?",
-  },
-  {
-    id: 9,
-    nombre: "Ricardo Morales",
-    fecha: "2024-06-09",
-    mensaje:
-      "Estoy de acuerdo, algunos personajes secundarios eran interesantes, pero no tuvieron suficiente tiempo en la historia.",
-  },
-  {
-    id: 10,
-    nombre: "Sofía Jiménez",
-    fecha: "2024-06-10",
-    mensaje:
-      "¿Alguien notó las referencias a otras obras del autor? Me encantó encontrar esos pequeños detalles.",
-  },
-];
-const numbreUsuario = "Juan Pérez"; //¿Se podría oberner de redux?
-
-const miComentario = (nombreComentario, nombreUsuario) => {
-  if (nombreComentario === nombreUsuario) {
-    return colorAmarillo;
-  } else {
-    return colorAmarilloClaro;
-  }
-};
-
-function formatDate(dateString) {
-  var date = new Date(dateString.replace(/\s/g, ''));
-  var year = date.getFullYear();
-  var month = ('0' + (date.getMonth() + 1)).slice(-2);
-  var day = ('0' + date.getDate()).slice(-2);
-  var hours = ('0' + date.getHours()).slice(-2);
-  var minutes = ('0' + date.getMinutes()).slice(-2);
-  var seconds = ('0' + date.getSeconds()).slice(-2);
-  return day + '/' + month + '/' + year + ', ' + hours + ':' + minutes + ':' + seconds;
-}
-
-const renderComentariosItem = ({ item, index }) => {
-  return (
-    <ListItem
-      containerStyle={styles.containerDiscusion}
-      key={index}
-      bottomDivider>
-      <View
-        style={{
-          backgroundColor: miComentario(item.nombre, numbreUsuario),
-          padding: 20,
-          width: "100%",
-        }}>
-        <View style={{ flexDirection: "row" }}>
-          <View style={{ flex: 1 }}>
-            <Text style={{ fontWeight: "bold" }}>{item.nombre}</Text>
-          </View>
-          <Text style={styles.fecha}>{formatDate(item.fecha)}</Text>
-        </View>
-        <Text style={styles.texto}>{item.mensaje}</Text>
-      </View>
-    </ListItem>
-  );
-};
-
 class Discusion extends Component {
-  componentDidMount() {
-    this.unsubscribeAuth = this.props.checkAuthState();
-    if (comentariosLibro.length === 0) {
-      this.setState({ showModal: true });
-    };
-  }
-
-  componentDidUpdate() {
-    this.unsubscribeAuth = this.props.checkAuthState();
-  }
-
-  componentWillUnmount() {
-    if (this.unsubscribeAuth) {
-      this.unsubscribeAuth();
-    }
-  }
   constructor(props) {
     super(props);
     this.state = {
@@ -169,93 +43,167 @@ class Discusion extends Component {
     this.toggleModal = this.toggleModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
   }
+
+  componentDidMount() {
+    this.props.fetchDiscusiones(this.props.route.params.idLibro);
+    this.unsubscribeAuth = this.props.checkAuthState();
+  }
+
+  componentWillUnmount() {
+    if (this.unsubscribeAuth) {
+      this.unsubscribeAuth();
+    }
+  }
+
   toggleModal() {
     this.setState({ showModal: !this.state.showModal });
   }
+
   closeModal() {
     this.setState({ showModal: false });
   }
+
   render() {
     const { navigate } = this.props.navigation;
+    const { isAuthenticated, discusiones, loading, error, user } = this.props;
     const { idLibro } = this.props.route.params;
-    if (!this.props.isAuthenticated) {
+
+    if (!isAuthenticated) {
       this.props.navigation.reset({
         index: 0,
         routes: [{ name: "Inicio" }],
       });
-    } else {
+    }
+
+    const miDiscusion = (uidDiscusion, idUsuario) => {
+      if (uidDiscusion === idUsuario) {
+        return colorAmarillo;
+      } else {
+        return colorAmarilloClaro;
+      }
+    };
+
+    if (loading) {
       return (
-        <SafeAreaView style={styles.container}>
-          <View style={{ backgroundColor: colorAzul, paddingBottom: 10 }}>
-            <Icon
-              name="plus-circle"
-              type="font-awesome"
-              size={28}
-              color={colorAmarillo}
-              onPress={() => navigate("EscribirMensaje", { idLibro: idLibro, origen: "Discusion" })}
-            />
-          </View>
-          <FlatList
-            data={comentariosLibro}
-            renderItem={renderComentariosItem}
-            keyExtractor={(item) => item.id.toString()}
-          />
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={this.state.showModal}
-            onRequestClose={this.closeModal}>
-            <View
-              style={{
-                flex: 1,
-                justifyContent: "center",
-                alignItems: "center",
-                backgroundColor: "rgba(0, 0, 0, 0.5)",
-              }}>
-              <View
-                style={{
-                  backgroundColor: colorAmarilloClaro,
-                  padding: 20,
-                  borderRadius: 10,
-                }}>
-                <TouchableOpacity
-                  onPress={this.closeModal}
-                  style={{
-                    position: "absolute",
-                    right: 5,
-                    top: 5,
-                  }}>
-                  <Icon name="times" type="font-awesome" size={20} />
-                </TouchableOpacity>
-                <Text style={styles.texto}>
-                  Actualmente no hay una discusión sobre este libro. ¿Deseas
-                  iniciar una?
-                </Text>
-                <View style={styles.buttonContainer}>
-                  <Button
-                    title="Sí"
-                    buttonStyle={styles.yesButton}
-                    onPress={() =>
-                      navigate("EscribirMensaje", {
-                        idLibro: idLibro,
-                        origen: "Discusion",
-                      })
-                    }
-                  />
-                  <Button
-                    title="No"
-                    buttonStyle={styles.noButton}
-                    onPress={() =>
-                      navigate("DetalleLibro", { idLibro: idLibro })
-                    }
-                  />
-                </View>
-              </View>
-            </View>
-          </Modal>
-        </SafeAreaView>
+        <IndicadorActividad />
       );
     }
+
+    if (error) {
+      console.log('Error: ', error);
+      return (
+        <View>
+          <Text>Error al cargar las discusiones.</Text>
+        </View>
+      );
+    }
+
+    function formatDate(dateString) {
+      var date = new Date(dateString.replace(/\s/g, ''));
+      var year = date.getFullYear();
+      var month = ('0' + (date.getMonth() + 1)).slice(-2);
+      var day = ('0' + date.getDate()).slice(-2);
+      var hours = ('0' + date.getHours()).slice(-2);
+      var minutes = ('0' + date.getMinutes()).slice(-2);
+      var seconds = ('0' + date.getSeconds()).slice(-2);
+      return day + '/' + month + '/' + year + ', ' + hours + ':' + minutes + ':' + seconds;
+    }
+
+    const renderDiscusionesItem = ({ item, index }) => {
+      return (
+        <ListItem
+          containerStyle={styles.containerDiscusion}
+          key={index}
+          bottomDivider>
+          <View
+            style={{
+              backgroundColor: miDiscusion(item.idUsuario, user.uid),
+              padding: 20,
+              width: "100%",
+            }}>
+            <View style={{ flexDirection: "row" }}>
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontWeight: "bold" }}>{item.nombre}</Text>
+              </View>
+              <Text style={styles.fecha}>{formatDate(item.fecha)}</Text>
+            </View>
+            <Text style={styles.texto}>{item.mensaje}</Text>
+          </View>
+        </ListItem>
+      );
+    };
+
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={{ backgroundColor: colorAzul, paddingBottom: 10 }}>
+          <Icon
+            name="plus-circle"
+            type="font-awesome"
+            size={28}
+            color={colorAmarillo}
+            onPress={() => navigate("EscribirMensaje", { idLibro: idLibro, origen: "Discusion" })}
+          />
+        </View>
+        <FlatList
+          data={discusiones}
+          renderItem={renderDiscusionesItem}
+          keyExtractor={(item) => item.idDiscusion.toString()}
+        />
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={(discusiones.length === 0) || this.state.showModal}
+          onRequestClose={this.closeModal}>
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+            }}>
+            <View
+              style={{
+                backgroundColor: colorAmarilloClaro,
+                padding: 20,
+                borderRadius: 10,
+              }}>
+              <TouchableOpacity
+                onPress={this.closeModal}
+                style={{
+                  position: "absolute",
+                  right: 5,
+                  top: 5,
+                }}>
+                <Icon name="times" type="font-awesome" size={20} />
+              </TouchableOpacity>
+              <Text style={styles.texto}>
+                Actualmente no hay una discusión sobre este libro. ¿Deseas
+                iniciar una?
+              </Text>
+              <View style={styles.buttonContainer}>
+                <Button
+                  title="Sí"
+                  buttonStyle={styles.yesButton}
+                  onPress={() =>
+                    navigate("EscribirMensaje", {
+                      idLibro: idLibro,
+                      origen: "Discusion",
+                    })
+                  }
+                />
+                <Button
+                  title="No"
+                  buttonStyle={styles.noButton}
+                  onPress={() =>
+                    navigate("DetalleLibro", { idLibro: idLibro })
+                  }
+                />
+              </View>
+            </View>
+          </View>
+        </Modal>
+      </SafeAreaView>
+    );
   }
 }
 
