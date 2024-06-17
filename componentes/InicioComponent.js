@@ -9,12 +9,7 @@ import {
   Image,
   TouchableOpacity,
 } from "react-native";
-import {
-  colorAmarillo,
-  colorAmarilloClaro,
-  colorAzul,
-  colorAzulClaro,
-} from "../app.config";
+import { colorAmarillo, colorAmarilloClaro, colorAzul } from "../app.config";
 import { Divider, Icon } from "@rneui/base";
 import LibroSimple from "./LibroSimpleComponent";
 import { connect } from "react-redux";
@@ -22,24 +17,18 @@ import { fetchLibros } from "../redux/actions/libros";
 import { checkAuthState } from "../redux/actions/autenticacion";
 import { Button } from "react-native-elements";
 import { IndicadorActividad } from "./IndicadorActividadComponent";
-import { fetchComentariosValoracionMedia } from "../redux/actions/comentarios";
 
 const mapStateToProps = (state) => ({
   loading: state.libros.loading,
   error: state.libros.errMess,
   libros: state.libros.libros,
-  loadingComentarios: state.comentarios.loading,
-  errorComentarios: state.comentarios.errMess,
   user: state.autenticacion.user,
   isAuthenticated: state.autenticacion.isAuthenticated,
-  valoracionesMedias: state.comentarios.valoracionesMedias,
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  fetchLibros: () => dispatch(fetchLibros()), /// Aqui iria la de pasarle unos id y que me devuleva los libros de esos id
+  fetchLibros: () => dispatch(fetchLibros()),
   checkAuthState: () => dispatch(checkAuthState()),
-  fetchComentariosValoracionMedia: (idLibro) =>
-    dispatch(fetchComentariosValoracionMedia(idLibro)),
 });
 
 const { width: screenWidth } = Dimensions.get("window");
@@ -50,14 +39,6 @@ class Inicio extends Component {
     this.unsubscribeAuth = this.props.checkAuthState();
   }
 
-  componentDidUpdate(prevProps) {
-    if (this.props.libros !== prevProps.libros && !this.props.loading) {
-      this.props.libros.forEach((libro) => {
-        this.props.fetchComentariosValoracionMedia(libro.idLibro);
-      });
-    }
-  }
-
   componentWillUnmount() {
     if (this.unsubscribeAuth) {
       this.unsubscribeAuth();
@@ -65,13 +46,13 @@ class Inicio extends Component {
   }
   render() {
     const { navigate } = this.props.navigation;
-    const { user, isAuthenticated, valoracionesMedias, libros, loading, error, loadingComentarios, errorComentarios } = this.props;
-    
-    if (loading || loadingComentarios) {
+    const { user, isAuthenticated, libros, loading, error } = this.props;
+
+    if (loading) {
       return <IndicadorActividad />;
     }
 
-    if (error || errorComentarios) {
+    if (error) {
       console.log("Error: ", error);
       return (
         <View>
@@ -81,7 +62,6 @@ class Inicio extends Component {
     }
 
     function renderLibro({ item }) {
-      const valoracionMedia = valoracionesMedias[item.idLibro];
       return (
         <TouchableOpacity
           style={styles.carousel}
@@ -91,7 +71,7 @@ class Inicio extends Component {
               params: { idLibro: item.idLibro },
             })
           }>
-          <LibroSimple libro={item} valoracionMedia={valoracionMedia !== undefined ? valoracionMedia : "0"}/>
+          <LibroSimple libro={item} />
         </TouchableOpacity>
       );
     }

@@ -1,9 +1,8 @@
 import React from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
-import { FontAwesome } from "@expo/vector-icons";
 import { colorAmarillo, colorAmarilloClaro } from "../app.config";
 
-const LibroSimple = ({ libro, valoracionMedia }) => {
+const LibroSimple = ({ libro }) => {
   const { imagen, titulo, autor } = libro;
 
   return (
@@ -14,10 +13,6 @@ const LibroSimple = ({ libro, valoracionMedia }) => {
       <View style={styles.infoContainer}>
         <Text style={styles.title}>{titulo}</Text>
         <Text style={styles.author}>{autor}</Text>
-        <View style={styles.ratingContainer}>
-          <FontAwesome name="star" size={20} color="black" />
-          <Text style={styles.rating}>{valoracionMedia}</Text>
-        </View>
       </View>
     </View>
   );

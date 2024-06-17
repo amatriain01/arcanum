@@ -7,20 +7,15 @@ import { IndicadorActividad } from "./IndicadorActividadComponent";
 import { FlatList, SafeAreaView, StyleSheet, View } from "react-native";
 import { Text } from "react-native";
 import { fetchLibros } from "../redux/actions/libros";
-import { fetchComentariosValoracionMedia } from "../redux/actions/comentarios";
 
 const mapStateToProps = (state) => ({
   loading: state.libros.loading,
   error: state.libros.errMess,
   libros: state.libros.libros,
-  loadingComentarios: state.comentarios.loading,
-  errorComentarios: state.comentarios.errMess,
-  valoracionesMedias: state.comentarios.valoracionesMedias,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   fetchLibros: () => dispatch(fetchLibros()), //aqui cambiar por la que coge los libros segun el estado y el usuario
-  fetchComentariosValoracionMedia: (idLibro) => dispatch(fetchComentariosValoracionMedia(idLibro)),
 });
 
 class BibliotecaFiltrada extends Component {
@@ -45,25 +40,20 @@ class BibliotecaFiltrada extends Component {
         this.props.navigation.setOptions({ title: "Mis Discusiones" });
       }
     }
-    if (this.props.libros !== prevProps.libros && !this.props.loading) {
-      this.props.libros.forEach(libro => {
-        this.props.fetchComentariosValoracionMedia(libro.idLibro);
-      });
-    }
   }
 
   render() {
     const { navigate } = this.props.navigation;
-    const { libros, loading, error, valoracionesMedias, loadingComentarios, errorComentarios } = this.props;
+    const { libros, loading, error } = this.props;
     const { estado } = this.props.route.params;
 
     const isDiscusion = estado === "Discusiones";
 
-    if (loading || loadingComentarios) {
+    if (loading) {
       return <IndicadorActividad />;
     }
 
-    if (error || errorComentarios) {
+    if (error) {
       console.log("Error: ", error);
       return (
         <View>
@@ -73,23 +63,27 @@ class BibliotecaFiltrada extends Component {
     }
 
     const renderBibliotecaItem = ({ item, index }) => {
-      const valoracionMedia = valoracionesMedias[item.idLibro];
-
       return (
         <ListItem
           containerStyle={styles.container}
           key={index}
           onPress={() => {
             if (isDiscusion) {
-              navigate("Biblioteca", { screen: "Discusion", params: { idLibro: item.idLibro } });
+              navigate("Biblioteca", {
+                screen: "Discusion",
+                params: { idLibro: item.idLibro },
+              });
             } else {
               {
-                navigate("Biblioteca", { screen: "DetalleLibro", params: { idLibro: item.idLibro } });
+                navigate("Biblioteca", {
+                  screen: "DetalleLibro",
+                  params: { idLibro: item.idLibro },
+                });
               }
             }
           }}
           bottomDivider>
-          <LibroSimple libro={item} valoracionMedia={valoracionMedia !== undefined ? valoracionMedia : "0"} />
+          <LibroSimple libro={item} />
         </ListItem>
       );
     };

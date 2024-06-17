@@ -3,6 +3,9 @@ import { View, Text, StyleSheet } from "react-native";
 import { colorAmarillo, colorAzul } from "../app.config";
 
 const Avatar = ({ nombre }) => {
+  if (!nombre) {
+    return null;
+  }
   const initials = nombre
     .split(" ")
     .map((word) => word.charAt(0))

@@ -161,12 +161,17 @@ function BibliotecaNavegador({ navigation }) {
         component={DetalleLibro}
         options={({ navigation }) => ({
           title: "Detalles del Libro",
-          headerLeft: () => (
+          headerRight: () => (
             <Icon
-              name="arrow-back"
+              name="home"
               size={28}
               color={colorAmarillo}
-              onPress={() => navigation.navigate('BibliotecaInicio')}
+              onPress={() =>
+                navigation.reset({
+                  index: 0,
+                  routes: [{ name: "Inicio" }],
+                })
+              }
             />
           ),
         })}
@@ -176,12 +181,17 @@ function BibliotecaNavegador({ navigation }) {
         component={Discusion}
         options={({ navigation }) => ({
           title: "Discusion",
-          headerLeft: () => (
+          headerRight: () => (
             <Icon
-              name="arrow-back"
+              name="home"
               size={28}
               color={colorAmarillo}
-              onPress={() => navigation.goBack()}
+              onPress={() =>
+                navigation.reset({
+                  index: 0,
+                  routes: [{ name: "Inicio" }],
+                })
+              }
             />
           ),
         })}
