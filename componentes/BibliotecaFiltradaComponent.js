@@ -13,6 +13,8 @@ const mapStateToProps = (state) => ({
   loading: state.libros.loading,
   error: state.libros.errMess,
   libros: state.libros.libros,
+  loadingComentarios: state.comentarios.loading,
+  errorComentarios: state.comentarios.errMess,
   valoracionesMedias: state.comentarios.valoracionesMedias,
 });
 
@@ -52,16 +54,16 @@ class BibliotecaFiltrada extends Component {
 
   render() {
     const { navigate } = this.props.navigation;
-    const { libros, loading, error, valoracionesMedias } = this.props;
+    const { libros, loading, error, valoracionesMedias, loadingComentarios, errorComentarios } = this.props;
     const { estado } = this.props.route.params;
 
     const isDiscusion = estado === "Discusiones";
 
-    if (loading) {
+    if (loading || loadingComentarios) {
       return <IndicadorActividad />;
     }
 
-    if (error) {
+    if (error || errorComentarios) {
       console.log("Error: ", error);
       return (
         <View>

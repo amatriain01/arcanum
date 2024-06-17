@@ -12,6 +12,8 @@ const mapStateToProps = (state) => ({
   loading: state.libros.loading,
   error: state.libros.errMess,
   libros: state.libros.libros,
+  loadingComentarios: state.comentarios.loading,
+  errorComentarios: state.comentarios.errMess,
   valoracionesMedias: state.comentarios.valoracionesMedias,
 });
 
@@ -35,15 +37,15 @@ class Biblioteca extends Component {
 
   render() {
     const { navigate } = this.props.navigation;
-    const { libros, loading, error, valoracionesMedias } = this.props;
+    const { libros, loading, error, valoracionesMedias, loadingComentarios, errorComentarios } = this.props;
 
-    if (loading) {
+    if (loading || loadingComentarios) {
       return (
         <IndicadorActividad />
       );
     }
 
-    if (error) {
+    if (error || errorComentarios) {
       console.log('Error: ', error);
       return (
         <View>

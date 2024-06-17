@@ -23,9 +23,11 @@ import { fetchComentariosValoracionMedia } from "../redux/actions/comentarios";
 
 const mapStateToProps = (state) => ({
   isAuthenticated: state.autenticacion.isAuthenticated,
-  loading: state.libros.loading,
-  error: state.libros.errMess,
+  loadingLibros: state.libros.loading,
+  errorLibros: state.libros.errMess,
   libro: state.libros.libro,
+  loadingComentarios: state.comentarios.loading,
+  errorComentarios: state.comentarios.errMess,
   valoracionesMedias: state.comentarios.valoracionesMedias,
 });
 
@@ -176,13 +178,13 @@ class DetalleLibro extends Component {
 
   render() {
     const { navigate } = this.props.navigation;
-    const { libro, loading, error, isAuthenticated, valoracionesMedias } = this.props;
+    const { libro, loadingLibros, errorLibros, isAuthenticated, valoracionesMedias, loadingComentarios, errorComentarios } = this.props;
 
-    if (loading || !libro) {
+    if (loadingLibros || !libro || loadingComentarios) {
       return <IndicadorActividad />;
     }
 
-    if (error) {
+    if (errorLibros || errorComentarios) {
       return (
         <View>
           <Text>Error al cargar el libro.</Text>
