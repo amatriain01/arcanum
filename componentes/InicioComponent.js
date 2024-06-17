@@ -28,6 +28,8 @@ const mapStateToProps = (state) => ({
   loading: state.libros.loading,
   error: state.libros.errMess,
   libros: state.libros.libros,
+  loadingComentarios: state.comentarios.loading,
+  errorComentarios: state.comentarios.errMess,
   user: state.autenticacion.user,
   isAuthenticated: state.autenticacion.isAuthenticated,
   valoracionesMedias: state.comentarios.valoracionesMedias,
@@ -63,13 +65,13 @@ class Inicio extends Component {
   }
   render() {
     const { navigate } = this.props.navigation;
-    const { user, isAuthenticated, valoracionesMedias, libros, loading, error } = this.props;
+    const { user, isAuthenticated, valoracionesMedias, libros, loading, error, loadingComentarios, errorComentarios } = this.props;
     
-    if (loading) {
+    if (loading || loadingComentarios) {
       return <IndicadorActividad />;
     }
 
-    if (error) {
+    if (error || errorComentarios) {
       console.log("Error: ", error);
       return (
         <View>
