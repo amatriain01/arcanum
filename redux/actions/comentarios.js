@@ -59,9 +59,9 @@ export const postComentario = (comentario) => {
 };
 
 
-export const comentariosValoracionMedia = (idLibro, valoracionMedia) => ({
+export const comentariosValoracionMedia = (valoracionMedia) => ({
     type: ActionTypes.COMENTARIOS_VALORACION_MEDIA,
-    payload: { idLibro, valoracionMedia }
+    payload: valoracionMedia
 });
 
 export const fetchComentariosValoracionMedia = (idLibro) => {
@@ -79,7 +79,7 @@ export const fetchComentariosValoracionMedia = (idLibro) => {
 
                 const valoracionMedia = comentariosList.reduce((acc, comment) => acc + parseFloat(comment.valoracion), 0) / comentariosList.length;
 
-                dispatch(comentariosValoracionMedia(idLibro, valoracionMedia));
+                dispatch(comentariosValoracionMedia(valoracionMedia));
             } else {
                 dispatch(comentariosError("No se encontraron comentarios en la base de datos"));
             }
