@@ -1,5 +1,5 @@
 import { Component } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Input, Rating } from "react-native-elements";
 import { connect } from "react-redux";
 import { colorAmarilloClaro, colorAzul, colorAzulClaro } from "../app.config";

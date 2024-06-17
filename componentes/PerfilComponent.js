@@ -60,8 +60,8 @@ class Perfil extends Component {
                 props.isComentarios
                   ? navigate("MisComentarios")
                   : navigate("BibliotecaFiltrada", {
-                      estado: props.titulo,
-                    });
+                    estado: props.titulo,
+                  });
               }
             }}>
             <View
