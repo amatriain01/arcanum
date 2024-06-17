@@ -19,29 +19,21 @@ import { connect } from "react-redux";
 import { checkAuthState } from "../redux/actions/autenticacion";
 import { fetchDetalleLibro } from "../redux/actions/libros";
 import { IndicadorActividad } from "./IndicadorActividadComponent";
+import { fetchComentariosValoracionMedia } from "../redux/actions/comentarios";
 
 const mapStateToProps = (state) => ({
   isAuthenticated: state.autenticacion.isAuthenticated,
   loading: state.libros.loading,
   error: state.libros.errMess,
   libro: state.libros.libro,
+  valoracionesMedias: state.comentarios.valoracionesMedias,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   checkAuthState: () => dispatch(checkAuthState()),
   fetchDetalleLibro: (idLibro) => dispatch(fetchDetalleLibro(idLibro)),
+  fetchComentariosValoracionMedia: (idLibro) => dispatch(fetchComentariosValoracionMedia(idLibro)),
 });
-
-function formatDate(dateString) {
-  var date = new Date(dateString.replace(/\s/g, ''));
-  var year = date.getFullYear();
-  var month = ('0' + (date.getMonth() + 1)).slice(-2);
-  var day = ('0' + date.getDate()).slice(-2);
-  var hours = ('0' + date.getHours()).slice(-2);
-  var minutes = ('0' + date.getMinutes()).slice(-2);
-  var seconds = ('0' + date.getSeconds()).slice(-2);
-  return day + '/' + month + '/' + year + ', ' + hours + ':' + minutes + ':' + seconds;
-}
 
 function InfoLibro(props) {
   const listadoEstados = [
@@ -72,11 +64,11 @@ function InfoLibro(props) {
             />
             <Text style={styles.texto}>Autor: {props.libro.autor}</Text>
             <Text style={styles.texto}>
-              Fecha de publicacion: {formatDate(props.libro.fechaPublicacion)}
+              Fecha de publicacion: {props.libro.fechaPublicacion}
             </Text>
             <View style={styles.ratingContainer}>
               <Text style={styles.texto}>
-                Puntuación: {props.libro.valoracion}{" "}
+                Puntuación: {isNaN(props.valoracionMedia) ? "0" : props.valoracionMedia}{" "}
               </Text>
               <Icon
                 name="star"
@@ -160,9 +152,11 @@ class DetalleLibro extends Component {
 
     if (idLibro) {
       this.props.fetchDetalleLibro(idLibro);
+      this.props.fetchComentariosValoracionMedia(idLibro);
     }
     this.focusListener = this.props.navigation.addListener('focus', () => {
       this.props.fetchDetalleLibro(idLibro);
+      this.props.fetchComentariosValoracionMedia(idLibro);
     });
     this.unsubscribeAuth = this.props.checkAuthState();
   }
@@ -182,7 +176,7 @@ class DetalleLibro extends Component {
 
   render() {
     const { navigate } = this.props.navigation;
-    const { libro, loading, error, isAuthenticated } = this.props;
+    const { libro, loading, error, isAuthenticated, valoracionesMedias } = this.props;
 
     if (loading || !libro) {
       return <IndicadorActividad />;
@@ -203,6 +197,7 @@ class DetalleLibro extends Component {
           toggleModal={this.toggleModal}
           isAuthenticated={isAuthenticated}
           libro={libro}
+          valoracionMedia={valoracionesMedias[libro.idLibro]}
         />
         <Modal
           animationType="slide"

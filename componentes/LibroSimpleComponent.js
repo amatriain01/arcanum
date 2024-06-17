@@ -3,10 +3,8 @@ import { View, Text, Image, StyleSheet } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { colorAmarillo, colorAmarilloClaro } from "../app.config";
 
-const LibroSimple = ({ libro, mostrarValidacion }) => {
+const LibroSimple = ({ libro, valoracionMedia }) => {
   const { imagen, titulo, autor } = libro;
-  const cantidad = mostrarValidacion ? libro.valoracion : libro.comentarios;
-  const icono = mostrarValidacion ? "star" : "comment";
 
   return (
     <View style={styles.container}>
@@ -17,8 +15,8 @@ const LibroSimple = ({ libro, mostrarValidacion }) => {
         <Text style={styles.title}>{titulo}</Text>
         <Text style={styles.author}>{autor}</Text>
         <View style={styles.ratingContainer}>
-          <FontAwesome name={icono} size={20} color="black" />
-          <Text style={styles.rating}>{cantidad}</Text>
+          <FontAwesome name="star" size={20} color="black" />
+          <Text style={styles.rating}>{valoracionMedia}</Text>
         </View>
       </View>
     </View>

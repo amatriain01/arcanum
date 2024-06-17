@@ -57,3 +57,35 @@ export const postComentario = (comentario) => {
         }
     };
 };
+
+
+export const comentariosValoracionMedia = (idLibro, valoracionMedia) => ({
+    type: ActionTypes.COMENTARIOS_VALORACION_MEDIA,
+    payload: { idLibro, valoracionMedia }
+});
+
+export const fetchComentariosValoracionMedia = (idLibro) => {
+    return async (dispatch) => {
+        dispatch(comentariosLoading());
+
+        try {
+            const comentariosRef = ref(db, 'comentarios');
+            const snapshot = await get(comentariosRef);
+            if (snapshot.exists()) {
+                const comentariosData = snapshot.val();
+                const comentariosList = Object.keys(comentariosData)
+                    .map(key => ({ idComentario: key, ...comentariosData[key] }))
+                    .filter(comment => comment.idLibro === idLibro);
+
+                const valoracionMedia = comentariosList.length > 0
+                    ? comentariosList.reduce((acc, comment) => acc + parseFloat(comment.valoracion), 0) / comentariosList.length : 0;
+
+                dispatch(comentariosValoracionMedia(idLibro, valoracionMedia));
+            } else {
+                dispatch(comentariosError("No se encontraron comentarios en la base de datos"));
+            }
+        } catch (error) {
+            dispatch(comentariosError(error.message));
+        }
+    };
+};
