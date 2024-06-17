@@ -44,7 +44,6 @@ class Perfil extends Component {
   render() {
     const { navigate } = this.props.navigation;
     const { user, libros, loading, error } = this.props;
-    console.log(user);
 
     function Boton(props) {
       if (props.data === undefined || props.data.length === undefined) {

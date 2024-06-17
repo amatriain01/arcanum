@@ -1,122 +1,175 @@
 import { React, Component } from "react";
 import { ScrollView } from "react-native-gesture-handler";
-import { Dimensions, FlatList, StyleSheet, Text, View } from "react-native";
-import { colorAmarillo } from "../app.config";
+import {
+  Dimensions,
+  FlatList,
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+} from "react-native";
+import {
+  colorAmarillo,
+  colorAmarilloClaro,
+  colorAzul,
+  colorAzulClaro,
+} from "../app.config";
 import { Divider, Icon } from "@rneui/base";
 import LibroSimple from "./LibroSimpleComponent";
-import EventoSimple from "./EventoSimpleComponent";
+import { connect } from "react-redux";
+import { fetchLibros } from "../redux/actions/libros";
+import { checkAuthState } from "../redux/actions/autenticacion";
+import { Button } from "react-native-elements";
+import { IndicadorActividad } from "./IndicadorActividadComponent";
+import { fetchComentariosValoracionMedia } from "../redux/actions/comentarios";
+
+const mapStateToProps = (state) => ({
+  loading: state.libros.loading,
+  error: state.libros.errMess,
+  libros: state.libros.libros,
+  user: state.autenticacion.user,
+  isAuthenticated: state.autenticacion.isAuthenticated,
+  valoracionesMedias: state.comentarios.valoracionesMedias,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  fetchLibros: () => dispatch(fetchLibros()), /// Aqui iria la de pasarle unos id y que me devuleva los libros de esos id
+  checkAuthState: () => dispatch(checkAuthState()),
+  fetchComentariosValoracionMedia: (idLibro) =>
+    dispatch(fetchComentariosValoracionMedia(idLibro)),
+});
 
 const { width: screenWidth } = Dimensions.get("window");
 
-const libros = [
-  {
-    imagen: "https://firebasestorage.googleapis.com/v0/b/arcanum-reactnative-dsm-2024.appspot.com/o/libros%2F0.jpg?alt=media&token=311d6ee9-cc8d-4913-9546-591bd045b073",
-    titulo: "El Señor de los Anillos",
-    autor: "J.R.R. Tolkien",
-    valoracion: 5,
-    comentarios: 10,
-  },
-  {
-    imagen: "https://firebasestorage.googleapis.com/v0/b/arcanum-reactnative-dsm-2024.appspot.com/o/libros%2F0.jpg?alt=media&token=311d6ee9-cc8d-4913-9546-591bd045b073",
-    titulo: "Cien años de soledad",
-    autor: "Gabriel García Márquez",
-    valoracion: 4,
-    comentarios: 8,
-  },
-  {
-    imagen: "https://firebasestorage.googleapis.com/v0/b/arcanum-reactnative-dsm-2024.appspot.com/o/libros%2F0.jpg?alt=media&token=311d6ee9-cc8d-4913-9546-591bd045b073",
-    titulo: "Harry Potter y la piedra filosofal",
-    autor: "J.K. Rowling",
-    valoracion: 4.5,
-    comentarios: 5,
-  },
-];
-
-const eventos = [
-  {
-    fecha: "2024-06-01",
-    titulo: "Presentación de libro",
-    imagen: require("./imagenes/logo.png"),
-  },
-  {
-    fecha: "2022-10-15",
-    titulo: "Club de lectura",
-    imagen: require("./imagenes/puntaEscarra.png"),
-  },
-  {
-    fecha: "2022-11-01",
-    titulo: "Firma de libros",
-    imagen: require("./imagenes/jaizkibel.png"),
-  },
-];
-
-function renderLibro({ item }) {
-  return (
-    <View style={styles.carousel}>
-      <LibroSimple
-        libro={item}
-        mostrarValidacion={true}
-        screenWidth={screenWidth}
-      />
-    </View>
-  );
-}
-
-function renderDiscusion({ item }) {
-  return (
-    <View style={styles.carousel}>
-      <LibroSimple libro={item} mostrarValidacion={false} />
-    </View>
-  );
-}
-
-function renderEvento({ item }) {
-  return <EventoSimple evento={item} />;
-}
-
-function ListadoElementos(props) {
-  return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Icon name={props.icono} type="font-awesome" size={30} />
-        <Text style={{ fontSize: 20, fontWeight: "bold" }}>
-          {" "}
-          {props.titulo}{" "}
-        </Text>
-      </View>
-      <Divider />
-      <FlatList
-        data={props.data}
-        renderItem={props.elemento}
-        horizontal
-        pagingEnabled
-        keyExtractor={Math.random}
-      />
-    </View>
-  );
-}
-
 class Inicio extends Component {
+  componentDidMount() {
+    this.props.fetchLibros();
+    this.unsubscribeAuth = this.props.checkAuthState();
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.libros !== prevProps.libros && !this.props.loading) {
+      this.props.libros.forEach((libro) => {
+        this.props.fetchComentariosValoracionMedia(libro.idLibro);
+      });
+    }
+  }
+
+  componentWillUnmount() {
+    if (this.unsubscribeAuth) {
+      this.unsubscribeAuth();
+    }
+  }
   render() {
+    const { navigate } = this.props.navigation;
+    const { user, isAuthenticated, valoracionesMedias, libros, loading, error } = this.props;
+    
+    if (loading) {
+      return <IndicadorActividad />;
+    }
+
+    if (error) {
+      console.log("Error: ", error);
+      return (
+        <View>
+          <Text>Error al cargar el Perfil.</Text>
+        </View>
+      );
+    }
+
+    function renderLibro({ item }) {
+      const valoracionMedia = valoracionesMedias[item.idLibro];
+      return (
+        <TouchableOpacity
+          style={styles.carousel}
+          onPress={() =>
+            navigate("Biblioteca", {
+              screen: "DetalleLibro",
+              params: { idLibro: item.idLibro },
+            })
+          }>
+          <LibroSimple libro={item} valoracionMedia={valoracionMedia !== undefined ? valoracionMedia : "0"}/>
+        </TouchableOpacity>
+      );
+    }
+
+    function ListadoElementos(props) {
+      return (
+        <View>
+          <View style={styles.header}>
+            <Icon name="book" type="font-awesome" size={30} />
+            <Text style={{ fontSize: 20, fontWeight: "bold" }}>
+              {" "}
+              {props.titulo}{" "}
+            </Text>
+          </View>
+          <Divider />
+          <FlatList
+            data={props.data}
+            renderItem={renderLibro}
+            horizontal
+            pagingEnabled
+            keyExtractor={Math.random}
+          />
+          <Button
+            title="Ver el listado completo"
+            onPress={() => navigate("Biblioteca")}
+            titleStyle={{ color: colorAmarillo, marginLeft: 10 }}
+            buttonStyle={{
+              backgroundColor: colorAzul,
+              borderRadius: 10,
+              margin: 10,
+              padding: 10,
+            }}
+          />
+        </View>
+      );
+    }
+
+    const redireccion = isAuthenticated ? "Mi Perfil" : "Iniciar Sesión";
+
     return (
-      <ScrollView>
+      <ScrollView style={styles.container}>
+        <View style={styles.headerPrincipal}>
+          <Image
+            source={require("../assets/logo.png")}
+            style={styles.image}
+            resizeMode="contain"
+          />
+          <View style={{ flex: 1, alignItems: "center" }}>
+            <Text style={{ fontSize: 20, fontWeight: "bold", flex: 1 }}>
+              BIENVENIDO A ARCANUM
+            </Text>
+            {isAuthenticated && (
+              <Text style={{ fontSize: 20, fontWeight: "bold", flex: 1 }}>
+                {user.displayName}
+              </Text>
+            )}
+          </View>
+          <Button
+            title={redireccion}
+            onPress={() => navigate(redireccion)}
+            icon={
+              <Icon
+                name="user"
+                type="font-awesome"
+                size={20}
+                color={colorAzul}
+              />
+            }
+            titleStyle={{ color: colorAzul, marginLeft: 10 }}
+            buttonStyle={{
+              backgroundColor: colorAmarillo,
+              borderRadius: 10,
+              margin: 10,
+              padding: 10,
+            }}
+          />
+        </View>
         <ListadoElementos
           titulo={"Libros Destacados"}
-          icono={"book"}
-          elemento={renderLibro}
-          data={libros}
-        />
-        <ListadoElementos
-          titulo={"Próximos Eventos"}
-          icono={"calendar"}
-          elemento={renderEvento}
-          data={eventos}
-        />
-        <ListadoElementos
-          titulo={"Discusiones Abiertas"}
-          icono={"comment"}
-          elemento={renderDiscusion}
-          data={libros}
+          data={libros.slice(0, 5)}
         />
       </ScrollView>
     );
@@ -128,8 +181,20 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colorAmarillo,
   },
+  headerPrincipal: {
+    padding: 10,
+    marginTop: 25,
+    textAlign: "center",
+    alignItems: "center",
+    justifyContent: "center",
+    borderStyle: "solid",
+    borderColor: colorAmarillo,
+    borderWidth: 5,
+    backgroundColor: colorAmarilloClaro,
+    borderRadius: 10,
+  },
   header: {
-    margin: 10,
+    padding: 10,
     textAlign: "center",
     flexDirection: "row",
     alignItems: "center",
@@ -137,8 +202,17 @@ const styles = StyleSheet.create({
   },
   carousel: {
     width: screenWidth,
+    backgroundColor: colorAmarillo,
+    borderStyle: "solid",
+    borderColor: colorAmarillo,
+    borderWidth: 5,
     height: 300,
+  },
+  image: {
+    margin: 10,
+    width: 40,
+    height: 40,
   },
 });
 
-export default Inicio;
+export default connect(mapStateToProps, mapDispatchToProps)(Inicio);
