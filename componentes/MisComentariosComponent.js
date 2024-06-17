@@ -6,26 +6,42 @@ import { View } from "react-native";
 import { Icon } from "@rneui/themed";
 import { ListItem } from "react-native-elements";
 import { checkAuthState } from "../redux/actions/autenticacion";
-import { fetchComentarios } from "../redux/actions/comentarios";
+import { fetchComentariosUsuario } from "../redux/actions/comentarios";
 import { IndicadorActividad } from "./IndicadorActividadComponent";
+import { fetchLibrosPorIds } from "../redux/actions/libros";
 
 const mapStateToProps = (state) => ({
   isAuthenticated: state.autenticacion.isAuthenticated,
   user: state.autenticacion.user,
   comentarios: state.comentarios.comentarios,
-  error: state.comentarios.errMess,
-  loading: state.comentarios.loading,
+  libros: state.libros.libros,
+  loading: state.libros.loading,
+  loadingComentarios: state.comentarios.loading,
+  error: state.libros.errMess,
+  errorComentarios: state.comentarios.errMess,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   checkAuthState: () => dispatch(checkAuthState()),
-  fetchComentarios: (idLibro) => dispatch(fetchComentarios(idLibro)), //Cambiar por la funcion que filtre por usuario
+  fetchComentariosUsuario: (idUsuario) => dispatch(fetchComentariosUsuario(idUsuario)),
+  fetchLibrosPorIds: (idsLibro) => dispatch(fetchLibrosPorIds(idsLibro)),
 });
 
 class MisComentarios extends Component {
   componentDidMount() {
-    this.props.fetchComentarios(0); //Cambiar por la funcion que filtre por usuario
+    this.props.fetchComentariosUsuario(this.props.user.uid);
     this.unsubscribeAuth = this.props.checkAuthState();
+  }
+
+  componentDidUpdate(prevProps) {
+    let idLibros = [];
+    if (this.props.comentarios !== prevProps.comentarios) {
+      this.props.comentarios.forEach((comentario) => {
+        idLibros.push(comentario.idLibro);
+      });
+      this.props.fetchLibrosPorIds(idLibros);
+    }
+  
   }
 
   componentWillUnmount() {
@@ -35,7 +51,7 @@ class MisComentarios extends Component {
   }
   render() {
     const { navigate } = this.props.navigation;
-    const { isAuthenticated, comentarios, loading, error, user } = this.props;
+    const { isAuthenticated, comentarios, loading, error, user, libros } = this.props;
 
     if (loading) {
       return <IndicadorActividad />;
@@ -93,7 +109,7 @@ class MisComentarios extends Component {
             <View style={{ flexDirection: "row" }}>
               <View style={{ flex: 1 }}>
               {/* Aqui iría el nombre del libro */}
-                <Text style={{ fontWeight: "bold" }}>{item.nombre}</Text>   
+                <Text style={{ fontWeight: "bold" }}>{libros[index].titulo}</Text>   
               </View>
               <Text style={styles.fecha}>{formatDate(item.fecha)}</Text>
             </View>

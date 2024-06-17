@@ -18,22 +18,28 @@ import { Button, Icon } from "react-native-elements";
 import { fetchLibros } from "../redux/actions/libros";
 import { IndicadorActividad } from "./IndicadorActividadComponent";
 import { checkAuthState } from "../redux/actions/autenticacion";
+import { fetchComentariosUsuario } from "../redux/actions/comentarios";
 
 const mapStateToProps = (state) => ({
   user: state.autenticacion.user,
   loading: state.libros.loading,
+  loadingComentarios: state.comentarios.loading,
   error: state.libros.errMess,
+  errorComentarios: state.comentarios.errMess,
   libros: state.libros.libros,
+  comentarios: state.comentarios.comentarios,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   checkAuthState: () => dispatch(checkAuthState()),
   fetchLibros: () => dispatch(fetchLibros()),
+  fetchComentariosUsuario: (idUsuario) => dispatch(fetchComentariosUsuario(idUsuario)),
 });
 class Perfil extends Component {
   componentDidMount() {
     this.props.fetchLibros();
     this.unsubscribeAuth = this.props.checkAuthState();
+    this.props.fetchComentariosUsuario(this.props.user.uid);
   }
 
   componentWillUnmount() {
@@ -43,7 +49,7 @@ class Perfil extends Component {
   }
   render() {
     const { navigate } = this.props.navigation;
-    const { user, libros, loading, error } = this.props;
+    const { user, libros, comentarios, loading, loadingComentarios, error, errorComentarios } = this.props;
 
     function Boton(props) {
       if (props.data === undefined || props.data.length === undefined) {
@@ -55,7 +61,7 @@ class Perfil extends Component {
             style={styles.boton}
             onPress={() => {
               if (props.data.length === 0) {
-                alert("No hay libros en este estado.");
+                alert("No hay información disponible.");
               } else {
                 props.isComentarios
                   ? navigate("MisComentarios")
@@ -94,12 +100,12 @@ class Perfil extends Component {
       );
     }
 
-    if (loading) {
+    if (loading || loadingComentarios) {
       return <IndicadorActividad />;
     }
 
-    if (error) {
-      console.log("Error: ", error);
+    if (error || errorComentarios) {
+      console.log("Error: ", error, errorComentarios);
       return (
         <View>
           <Text>Error al cargar el Perfil.</Text>
@@ -133,7 +139,7 @@ class Perfil extends Component {
           <Boton
             titulo={"Mis Comentarios"}
             icono={"star"}
-            data={libros}
+            data={comentarios}
             isComentarios={true}
           />
         </View>

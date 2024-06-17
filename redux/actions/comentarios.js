@@ -39,6 +39,29 @@ export const fetchComentarios = (idLibro) => {
     };
 };
 
+export const fetchComentariosUsuario = (idUsuario) => {
+    return async (dispatch) => {
+        dispatch(comentariosLoading());
+
+        try {
+            const comentariosRef = ref(db, 'comentarios');
+            const snapshot = await get(comentariosRef);
+            if (snapshot.exists()) {
+                const comentariosData = snapshot.val();
+                const comentariosList = Object.keys(comentariosData)
+                    .map(key => ({ idComentario: key, ...comentariosData[key] }))
+                    .filter(comment => comment.idUsuario === idUsuario);
+
+                dispatch(comentariosSuccess(comentariosList));
+            } else {
+                dispatch(comentariosError("No se encontraron comentarios en la base de datos"));
+            }
+        } catch (error) {
+            dispatch(comentariosError(error.message));
+        }
+    };
+};
+
 
 export const addComentario = (comentario) => ({
     type: ActionTypes.ADD_COMENTARIO,
