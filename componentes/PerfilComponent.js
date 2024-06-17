@@ -20,6 +20,7 @@ import { IndicadorActividad } from "./IndicadorActividadComponent";
 import { checkAuthState } from "../redux/actions/autenticacion";
 import { fetchComentariosUsuario } from "../redux/actions/comentarios";
 import { fetchDiscusionesUsuario } from "../redux/actions/discusiones";
+import { fetchLibrosEstados } from "../redux/actions/estados";
 
 const mapStateToProps = (state) => ({
   user: state.autenticacion.user,
@@ -27,20 +28,25 @@ const mapStateToProps = (state) => ({
   loadingComentarios: state.comentarios.loading,
   error: state.libros.errMess,
   errorComentarios: state.comentarios.errMess,
-  libros: state.libros.libros,
   comentarios: state.comentarios.comentarios,
   discusiones: state.discusiones.discusiones,
   errorDiscusiones: state.discusiones.errMess,
   loadingDiscusiones: state.discusiones.loading,
+  leyendo: state.estados.leyendo,
+  leido: state.estados.leido,
+  pendiente: state.estados.pendiente,
+  loadingEstados: state.estados.loading,
+  errorEstados: state.estados.errMess,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   checkAuthState: () => dispatch(checkAuthState()),
-  fetchLibros: () => dispatch(fetchLibros()),
   fetchComentariosUsuario: (idUsuario) =>
     dispatch(fetchComentariosUsuario(idUsuario)),
   fetchDiscusionesUsuario: (idUsuario) =>
     dispatch(fetchDiscusionesUsuario(idUsuario)),
+  fetchLibrosEstados: (idUsuario, listName) =>
+    dispatch(fetchLibrosEstados(idUsuario, listName)),
 });
 class Perfil extends Component {
   componentDidMount() {
@@ -48,6 +54,9 @@ class Perfil extends Component {
     this.unsubscribeAuth = this.props.checkAuthState();
     this.props.fetchComentariosUsuario(this.props.user.uid);
     this.props.fetchDiscusionesUsuario(this.props.user.uid);
+    this.props.fetchLibrosEstados(this.props.user.uid, "leyendo");
+    this.props.fetchLibrosEstados(this.props.user.uid, "leido");
+    this.props.fetchLibrosEstados(this.props.user.uid, "pendiente");
   }
 
   componentWillUnmount() {
@@ -57,14 +66,14 @@ class Perfil extends Component {
   }
   render() {
     const { navigate } = this.props.navigation;
-    const { user, libros, comentarios, discusiones, loading, loadingComentarios, loadingDiscusiones, error, errorComentarios, errorDiscusiones } = this.props;
+    const { user, comentarios, discusiones, loading, loadingComentarios, loadingDiscusiones, error, errorComentarios, errorDiscusiones, leyendo, leido, pendiente, errorEstados, loadingEstados } = this.props;
 
-    if (loading || loadingComentarios || loadingDiscusiones) {
+    if (loading || loadingComentarios || loadingDiscusiones || loadingEstados) {
       return <IndicadorActividad />;
     }
 
-    if (error || errorComentarios || errorDiscusiones) {
-      console.log("Error: ", error, errorComentarios, errorDiscusiones);
+    if (error || errorComentarios || errorDiscusiones || errorEstados) {
+      console.log("Error: ", error, errorComentarios, errorDiscusiones, errorEstados);
       return (
         <View>
           <Text>Error al cargar el Perfil.</Text>
@@ -92,9 +101,9 @@ class Perfil extends Component {
                 props.isComentarios
                   ? navigate("MisComentarios")
                   : navigate("BibliotecaFiltrada", {
-                      estado: props.titulo,
-                      idLibros: idLibros,
-                    });
+                    estado: props.titulo,
+                    idLibros: idLibros,
+                  });
               }
             }}>
             <View
@@ -139,13 +148,13 @@ class Perfil extends Component {
           </View>
         </View>
         <View>
-          <Boton titulo={"Leidos"} icono={"check"} data={libros} />
+          <Boton titulo={"Leidos"} icono={"check"} data={leido} />
         </View>
         <View>
-          <Boton titulo={"Pendientes"} icono={"clock-o"} data={libros} />
+          <Boton titulo={"Pendientes"} icono={"clock-o"} data={pendiente} />
         </View>
         <View>
-          <Boton titulo={"Leyendo"} icono={"book"} data={libros} />
+          <Boton titulo={"Leyendo"} icono={"book"} data={leyendo} />
         </View>
         <View>
           <Boton titulo={"Discusiones"} icono={"comment"} data={discusiones} />
