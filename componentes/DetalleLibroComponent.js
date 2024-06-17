@@ -1,5 +1,5 @@
-import { LogBox } from 'react-native';
-LogBox.ignoreLogs(['Warning: ...']);
+import { LogBox } from "react-native";
+LogBox.ignoreLogs(["Warning: ..."]);
 import { Component, useState } from "react";
 import {
   ScrollView,
@@ -36,108 +36,16 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
   checkAuthState: () => dispatch(checkAuthState()),
   fetchDetalleLibro: (idLibro) => dispatch(fetchDetalleLibro(idLibro)),
-  fetchComentariosValoracionMedia: (idLibro) => dispatch(fetchComentariosValoracionMedia(idLibro)),
+  fetchComentariosValoracionMedia: (idLibro) =>
+    dispatch(fetchComentariosValoracionMedia(idLibro)),
 });
-
-function InfoLibro(props) {
-  const listadoEstados = [
-    { key: 0, value: "Sin estado" },
-    { key: 1, value: "Pendiente" },
-    { key: 2, value: "Leyendo" },
-    { key: 3, value: "Leído" }
-  ];
-
-  //Aqui sería que compruebe si ya hay uno y lo ponga y si no por defecto
-  // estado != null ? estado : "Selecciona un estado"
-  const [selected, setSelected] = useState("Selecciona un estado");
-  return (
-    <View>
-      <Card containerStyle={styles.container}>
-        <Card.Title style={styles.titulo}>{props.libro.titulo}</Card.Title>
-        <View style={styles.cuerpo}>
-          <Card.Image source={{ uri: props.libro.imagen }} style={styles.imagen} />
-          <View style={styles.info}>
-            <SelectList
-              setSelected={(val) => setSelected(val)}
-              data={listadoEstados}
-              save="value"
-              search={false}
-              placeholder="Selecciona un estado"
-              defaultOption={{ key: 0, value: selected }}
-              style={{ width: 300, color: colorAzul }}
-            />
-            <Text style={styles.texto}>Autor: {props.libro.autor}</Text>
-            <Text style={styles.texto}>
-              Fecha de publicacion: {props.libro.fechaPublicacion}
-            </Text>
-            <View style={styles.ratingContainer}>
-              <Text style={styles.texto}>
-                Puntuación: {isNaN(props.valoracionMedia) ? "-" : props.valoracionMedia}{" "}
-              </Text>
-              <Icon
-                name="star"
-                type="font-awesome"
-                size={20}
-                color={colorAmarillo}
-              />
-            </View>
-            <Text style={styles.texto}>{props.libro.descripcion}</Text>
-          </View>
-          <View>
-            <TouchableOpacity
-              style={styles.boton}
-              onPress={() => {
-                if (props.isAuthenticated) {
-                  props.navigate("Discusion", { idLibro: props.libro.idLibro });
-                } else {
-                  props.toggleModal();
-                }
-              }}>
-              <View style={{ flex: 1, alignItems: "center" }}>
-                <Text style={styles.texto}>Ver la discusión del libro</Text>
-              </View>
-              <Icon
-                name="arrow-right"
-                type="font-awesome"
-                size={20}
-                color={colorAzul}
-                style={{ margin: 5 }}
-              />
-            </TouchableOpacity>
-          </View>
-          <View>
-            <TouchableOpacity
-              style={styles.boton}
-              onPress={() => {
-                if (props.isAuthenticated) {
-                  props.navigate("Comentarios", { idLibro: props.libro.idLibro });
-                } else {
-                  props.toggleModal();
-                }
-              }}>
-              <View style={{ flex: 1, alignItems: "center" }}>
-                <Text style={styles.texto}>Ver las reseñas del libro</Text>
-              </View>
-              <Icon
-                name="arrow-right"
-                type="font-awesome"
-                size={20}
-                color={colorAzul}
-                style={{ margin: 5 }}
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Card>
-    </View>
-  );
-}
 
 class DetalleLibro extends Component {
   constructor(props) {
     super(props);
     this.state = {
       showModal: false,
+      selected: "Sin Estado",
     };
     this.toggleModal = this.toggleModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
@@ -151,6 +59,10 @@ class DetalleLibro extends Component {
     this.setState({ showModal: false });
   }
 
+  setSelected(val) {
+    this.setState({ selected: val });
+  }
+
   componentDidMount() {
     const { idLibro } = this.props.route.params;
 
@@ -158,7 +70,7 @@ class DetalleLibro extends Component {
       this.props.fetchDetalleLibro(idLibro);
       this.props.fetchComentariosValoracionMedia(idLibro);
     }
-    this.focusListener = this.props.navigation.addListener('focus', () => {
+    this.focusListener = this.props.navigation.addListener("focus", () => {
       this.props.fetchDetalleLibro(idLibro);
       this.props.fetchComentariosValoracionMedia(idLibro);
     });
@@ -180,7 +92,15 @@ class DetalleLibro extends Component {
 
   render() {
     const { navigate } = this.props.navigation;
-    const { libro, loadingLibros, errorLibros, isAuthenticated, valoracionMedia, loadingComentarios, errorComentarios } = this.props;
+    const {
+      libro,
+      loadingLibros,
+      errorLibros,
+      isAuthenticated,
+      valoracionMedia,
+      loadingComentarios,
+      errorComentarios,
+    } = this.props;
 
     if (loadingLibros || !libro || loadingComentarios) {
       return <IndicadorActividad />;
@@ -193,16 +113,103 @@ class DetalleLibro extends Component {
         </View>
       );
     }
+    const listadoEstados = [
+      { key: 0, value: "Sin estado" },
+      { key: 1, value: "Pendiente" },
+      { key: 2, value: "Leyendo" },
+      { key: 3, value: "Leído" },
+    ];
+
+    // const [selected, setSelected] = useState("Selecciona un estado");
 
     return (
       <ScrollView style={{ backgroundColor: colorAmarilloClaro }}>
-        <InfoLibro
-          navigate={navigate}
-          toggleModal={this.toggleModal}
-          isAuthenticated={isAuthenticated}
-          libro={libro}
-          valoracionMedia={valoracionMedia}
-        />
+        <View>
+          <Card containerStyle={styles.container}>
+            <Card.Title style={styles.titulo}>{libro.titulo}</Card.Title>
+            <View style={styles.cuerpo}>
+              <Card.Image
+                source={{ uri: libro.imagen }}
+                style={styles.imagen}
+              />
+              <View style={styles.info}>
+                <SelectList
+                  setSelected={(val) => this.setSelected(val)}
+                  data={listadoEstados}
+                  search={false}
+                  save="value"
+                  placeholder="Selecciona un estado"
+                  defaultOption={{ key: 0, value: this.state.selected }}
+                  style={{ width: 300, color: colorAzul }}
+                />
+                <Text style={styles.texto}>Autor: {libro.autor}</Text>
+                <Text style={styles.texto}>
+                  Fecha de publicacion: {libro.fechaPublicacion}
+                </Text>
+                <View style={styles.ratingContainer}>
+                  <Text style={styles.texto}>
+                    Puntuación: {isNaN(valoracionMedia) ? "-" : valoracionMedia}{" "}
+                  </Text>
+                  <Icon
+                    name="star"
+                    type="font-awesome"
+                    size={20}
+                    color={colorAmarillo}
+                  />
+                </View>
+                <Text style={styles.texto}>{libro.descripcion}</Text>
+              </View>
+              <View>
+                <TouchableOpacity
+                  style={styles.boton}
+                  onPress={() => {
+                    if (isAuthenticated) {
+                      navigate("Discusion", {
+                        idLibro: libro.idLibro,
+                      });
+                    } else {
+                      toggleModal();
+                    }
+                  }}>
+                  <View style={{ flex: 1, alignItems: "center" }}>
+                    <Text style={styles.texto}>Ver la discusión del libro</Text>
+                  </View>
+                  <Icon
+                    name="arrow-right"
+                    type="font-awesome"
+                    size={20}
+                    color={colorAzul}
+                    style={{ margin: 5 }}
+                  />
+                </TouchableOpacity>
+              </View>
+              <View>
+                <TouchableOpacity
+                  style={styles.boton}
+                  onPress={() => {
+                    if (isAuthenticated) {
+                      navigate("Comentarios", {
+                        idLibro: libro.idLibro,
+                      });
+                    } else {
+                      toggleModal();
+                    }
+                  }}>
+                  <View style={{ flex: 1, alignItems: "center" }}>
+                    <Text style={styles.texto}>Ver las reseñas del libro</Text>
+                  </View>
+                  <Icon
+                    name="arrow-right"
+                    type="font-awesome"
+                    size={20}
+                    color={colorAzul}
+                    style={{ margin: 5 }}
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Card>
+        </View>
         <Modal
           animationType="slide"
           transparent={true}
