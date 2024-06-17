@@ -28,7 +28,8 @@ export const fetchLibrosEstados = (idUsuario, listName) => {
                 const idsLibros = Object.keys(librosData);
                 dispatch(librosEstadosSuccess(idsLibros));
             } else {
-                dispatch(librosEstadosError("No se encontraron libros en la base de datos"));
+                createEstadosDefault(idUsuario);
+                dispatch(librosEstadosSuccess([]));
             }
         }
         catch (error) {
@@ -37,6 +38,14 @@ export const fetchLibrosEstados = (idUsuario, listName) => {
     }
 }
 
+const createEstadosDefault = async (idUsuario) => {
+    const estadosRef = ref(db, `estados/${idUsuario}`);
+    await set(estadosRef, {
+        leido: { "1": 1 },
+        leyendo: { "1": 1 },
+        pendiente: { "1": 1 }
+    });
+}
 
 export const addLibroEstadosLoading = () => ({
     type: ActionTypes.ADD_LIBRO_ESTADOS_LOADING
