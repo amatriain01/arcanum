@@ -3,6 +3,7 @@ import { autenticacion } from './reducers/autenticacion';
 import { libros } from './reducers/libros';
 import { comentarios } from './reducers/comentarios'
 import { discusiones } from './reducers/discusiones'
+import { estados } from './reducers/estados'
 
 export const ConfigureStore = () => {
     const store = configureStore({
@@ -10,7 +11,8 @@ export const ConfigureStore = () => {
             autenticacion: autenticacion,
             libros: libros,
             comentarios: comentarios,
-            discusiones: discusiones
+            discusiones: discusiones,
+            estados: estados
         }
     });
 

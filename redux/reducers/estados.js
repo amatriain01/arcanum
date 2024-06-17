@@ -8,7 +8,7 @@ const initialState = {
     errMess: null
 };
 
-export const bookReducer = (state = initialState, action) => {
+export const estados = (state = initialState, action) => {
     switch (action.type) {
         case ActionTypes.ADD_LIBRO_ESTADOS_LOADING:
         case ActionTypes.REMOVE_LIBRO_ESTADOS_LOADING:

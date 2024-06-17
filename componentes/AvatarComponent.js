@@ -1,7 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { colorAmarillo, colorAmarilloClaro, colorAzul, colorAzulClaro } from "../app.config";
-import { Image } from "react-native";
+import { colorAmarillo, colorAzul } from "../app.config";
 
 const Avatar = ({ nombre }) => {
   const initials = nombre
