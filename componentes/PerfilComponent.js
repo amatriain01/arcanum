@@ -17,31 +17,37 @@ import Avatar from "./AvatarComponent";
 import { Button, Icon } from "react-native-elements";
 import { fetchLibros } from "../redux/actions/libros";
 import { IndicadorActividad } from "./IndicadorActividadComponent";
+import { checkAuthState } from "../redux/actions/autenticacion";
 
 const mapStateToProps = (state) => ({
+  user: state.autenticacion.user,
   loading: state.libros.loading,
   error: state.libros.errMess,
   libros: state.libros.libros,
 });
 
 const mapDispatchToProps = (dispatch) => ({
+  checkAuthState: () => dispatch(checkAuthState()),
   fetchLibros: () => dispatch(fetchLibros()),
 });
 class Perfil extends Component {
   componentDidMount() {
     this.props.fetchLibros();
+    this.unsubscribeAuth = this.props.checkAuthState();
+  }
+
+  componentWillUnmount() {
+    if (this.unsubscribeAuth) {
+      this.unsubscribeAuth();
+    }
   }
   render() {
     const { navigate } = this.props.navigation;
-    const { libros, loading, error } = this.props;
-
-    const usuario = {
-      nombre: "Juan Perez",
-      email: "pepe@pepe.es",
-    };
+    const { user, libros, loading, error } = this.props;
+    console.log(user);
 
     function Boton(props) {
-      if( props.data === undefined || props.data.length === undefined){
+      if (props.data === undefined || props.data.length === undefined) {
         props.data.length = 0;
       }
       return (
@@ -105,10 +111,10 @@ class Perfil extends Component {
       <ScrollView style={styles.container}>
         <View>
           <View style={styles.infoContainer}>
-            <Avatar nombre={usuario.nombre} />
+            <Avatar nombre={user.displayName} />
             <View style={styles.textoInfo}>
-              <Text style={styles.texto}>Nombre: {usuario.nombre}</Text>
-              <Text style={styles.texto}>Email: {usuario.email}</Text>
+              <Text style={styles.texto}>Nombre: {user.displayName}</Text>
+              <Text style={styles.texto}>Email: {user.email}</Text>
             </View>
           </View>
         </View>
@@ -133,9 +139,9 @@ class Perfil extends Component {
           />
         </View>
         <Button
-        title="Cerrar Sesión"
-        buttonStyle={styles.logoutButton}
-        onPress={() => navigate("Cerrar Sesión")}
+          title="Cerrar Sesión"
+          buttonStyle={styles.logoutButton}
+          onPress={() => navigate("Cerrar Sesión")}
         />
       </ScrollView>
     );
@@ -182,17 +188,17 @@ const styles = StyleSheet.create({
     textAlign: "justify",
   },
   logoutButton: {
-      backgroundColor: "red",
-      padding: 10,
-      textAlign: "center",
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "center",
-      margin: 10,
-      borderRadius: 10,
-      borderWidth: 2,
-      borderStyle: "solid",
-      borderColor: "red",
+    backgroundColor: "red",
+    padding: 10,
+    textAlign: "center",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    margin: 10,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderStyle: "solid",
+    borderColor: "red",
   },
 });
 
