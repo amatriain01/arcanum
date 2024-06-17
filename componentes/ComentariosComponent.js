@@ -6,8 +6,10 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  View,
 } from "react-native";
 import { connect } from "react-redux";
+import { Button, ListItem } from "react-native-elements";
 import {
   colorAmarillo,
   colorAmarilloClaro,
@@ -15,9 +17,7 @@ import {
   colorAzulClaro,
   colorAzulIntermedio,
 } from "../app.config";
-import { View } from "react-native";
 import { Icon } from "@rneui/themed";
-import { Button, ListItem } from "react-native-elements";
 import { checkAuthState } from "../redux/actions/autenticacion";
 import { fetchComentarios } from "../redux/actions/comentarios";
 import { IndicadorActividad } from "./IndicadorActividadComponent";
@@ -59,6 +59,7 @@ class Comentarios extends Component {
   toggleModal() {
     this.setState({ showModal: !this.state.showModal });
   }
+
   closeModal() {
     this.setState({ showModal: false });
   }

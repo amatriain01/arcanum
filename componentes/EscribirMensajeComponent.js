@@ -8,6 +8,7 @@ import { checkAuthState } from "../redux/actions/autenticacion";
 import { postComentario } from "../redux/actions/comentarios";
 import { postDiscusion } from "../redux/actions/discusiones";
 import { fetchComentarios } from "../redux/actions/comentarios";
+import { fetchDiscusiones } from "../redux/actions/discusiones";
 
 const mapStateToProps = (state) => ({
   isAuthenticated: state.autenticacion.isAuthenticated,
@@ -19,6 +20,7 @@ const mapDispatchToProps = (dispatch) => ({
   postComentario: (comentario) => dispatch(postComentario(comentario)),
   fetchComentarios: (idLibro) => dispatch(fetchComentarios(idLibro)),
   postDiscusion: (discusion) => dispatch(postDiscusion(discusion)),
+  fetchDiscusiones: (idLibro) => dispatch(fetchDiscusiones(idLibro)),
 });
 
 class EscribirMensaje extends Component {
@@ -79,7 +81,7 @@ class EscribirMensaje extends Component {
     const { idLibro } = this.props.route.params;
     const { valoracion, texto } = this.state;
 
-    if (this.isComentario) {
+    if (this.isComentario()) {
       if (user) {
         const comentario = {
           nombre: user.displayName,
@@ -95,12 +97,14 @@ class EscribirMensaje extends Component {
     } else {
       if (user) {
         const comentario = {
-          idLibro: idLibro,
-          autor: user.displayName,
-          mensaje: texto,
+          nombre: user.displayName,
           fecha: new Date().toISOString(),
+          idLibro: idLibro,
+          idUsuario: user.uid,
+          mensaje: texto,
         };
         this.props.postDiscusion(comentario);
+        this.props.fetchDiscusiones(idLibro);
       }
     }
     this.volverAtras();
@@ -108,12 +112,14 @@ class EscribirMensaje extends Component {
 
   render() {
     const { texto, valoracion } = this.state;
+    const { idLibro } = this.props.route.params;
+    const { navigate } = this.props.navigation;
 
     return (
       <View style={styles.container}>
         <View style={styles.contenedor}>
           <Input
-            placeholder="Escribe tu comentario..."
+            placeholder="Escribe tu mensaje..."
             multiline={true}
             numberOfLines={2}
             value={texto}
@@ -124,7 +130,7 @@ class EscribirMensaje extends Component {
             placeholderTextColor={colorAzul}
             onChangeText={this.handleTexto}
           />
-          {this.isComentario && (
+          {this.isComentario() && (
             <Rating
               showRating
               onFinishRating={this.ratingCompleted}
@@ -145,7 +151,8 @@ class EscribirMensaje extends Component {
             <Button
               title={"Cancelar"}
               type="clear"
-              onPress={this.volverAtras}
+              onPress={() =>
+                navigate("DetalleLibro", { idLibro: idLibro })}
             />
           </View>
         </View>

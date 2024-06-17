@@ -26,7 +26,7 @@ export const fetchDiscusiones = (idLibro) => {
             if (snapshot.exists()) {
                 const discusionesData = snapshot.val();
                 const discusionesList = Object.keys(discusionesData)
-                    .map(key => ({ id: key, ...discusionesData[key] }))
+                    .map(key => ({ idDiscusion: key, ...discusionesData[key] }))
                     .filter(discussion => discussion.idLibro === idLibro);
 
                 dispatch(discusionesSuccess(discusionesList));
