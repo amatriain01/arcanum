@@ -66,7 +66,6 @@ class MisComentarios extends Component {
   render() {
     const { navigate } = this.props.navigation;
     const { comentarios, loading, error, libros } = this.props;
-    console.log("Comentarios: ", libros);
 
     if (loading) {
       return <IndicadorActividad />;

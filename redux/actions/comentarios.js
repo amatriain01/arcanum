@@ -100,7 +100,8 @@ export const fetchComentariosValoracionMedia = (idLibro) => {
                     .map(key => ({ idComentario: key, ...comentariosData[key] }))
                     .filter(comment => comment.idLibro === idLibro);
 
-                const valoracionMedia = comentariosList.reduce((acc, comment) => acc + parseFloat(comment.valoracion), 0) / comentariosList.length;
+                const valoracionMediaSinRedondear = comentariosList.reduce((acc, comment) => acc + parseFloat(comment.valoracion), 0) / comentariosList.length;
+                const valoracionMedia = parseFloat(valoracionMediaSinRedondear.toFixed(2));
 
                 dispatch(comentariosValoracionMedia(valoracionMedia));
             } else {

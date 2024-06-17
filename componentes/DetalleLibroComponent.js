@@ -59,10 +59,6 @@ class DetalleLibro extends Component {
     this.setState({ showModal: false });
   }
 
-  setSelected(val) {
-    this.setState({ selected: val });
-  }
-
   componentDidMount() {
     const { idLibro } = this.props.route.params;
 
@@ -120,8 +116,6 @@ class DetalleLibro extends Component {
       { key: 3, value: "Leído" },
     ];
 
-    // const [selected, setSelected] = useState("Selecciona un estado");
-
     return (
       <ScrollView style={{ backgroundColor: colorAmarilloClaro }}>
         <View>
@@ -134,12 +128,11 @@ class DetalleLibro extends Component {
               />
               <View style={styles.info}>
                 <SelectList
-                  setSelected={(val) => this.setSelected(val)}
+                  setSelected={(val) => this.state.selected = val}
                   data={listadoEstados}
                   search={false}
                   save="value"
-                  placeholder="Selecciona un estado"
-                  defaultOption={{ key: 0, value: this.state.selected }}
+                  defaultOption={{ key: 0, value: "Sin estado" }}
                   style={{ width: 300, color: colorAzul }}
                 />
                 <Text style={styles.texto}>Autor: {libro.autor}</Text>
