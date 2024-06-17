@@ -4,7 +4,7 @@ const initialState = {
     loading: false,
     comentarios: [],
     errMess: null,
-    valoracionesMedias: {}
+    valoracionMedia: null,
 };
 
 export const comentarios = (state = initialState, action) => {
@@ -18,7 +18,7 @@ export const comentarios = (state = initialState, action) => {
         case ActionTypes.ADD_COMENTARIO:
             return { ...state, comentarios: [action.payload, ...state.comentarios] };
         case ActionTypes.COMENTARIOS_VALORACION_MEDIA:
-            return { ...state, loading: false, valoracionesMedias: { ...state.valoracionesMedias, [action.payload.idLibro]: action.payload.valoracionMedia, } };
+            return { ...state, loading: false, valoracionMedia: action.payload };
         default:
             return state;
     }

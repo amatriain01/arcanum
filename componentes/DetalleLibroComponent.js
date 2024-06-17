@@ -1,3 +1,5 @@
+import { LogBox } from 'react-native';
+LogBox.ignoreLogs(['Warning: ...']);
 import { Component, useState } from "react";
 import {
   ScrollView,
@@ -28,7 +30,7 @@ const mapStateToProps = (state) => ({
   libro: state.libros.libro,
   loadingComentarios: state.comentarios.loading,
   errorComentarios: state.comentarios.errMess,
-  valoracionesMedias: state.comentarios.valoracionesMedias,
+  valoracionMedia: state.comentarios.valoracionMedia,
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -70,7 +72,7 @@ function InfoLibro(props) {
             </Text>
             <View style={styles.ratingContainer}>
               <Text style={styles.texto}>
-                Puntuación: {isNaN(props.valoracionMedia) ? "0" : props.valoracionMedia}{" "}
+                Puntuación: {isNaN(props.valoracionMedia) ? "-" : props.valoracionMedia}{" "}
               </Text>
               <Icon
                 name="star"
@@ -178,7 +180,7 @@ class DetalleLibro extends Component {
 
   render() {
     const { navigate } = this.props.navigation;
-    const { libro, loadingLibros, errorLibros, isAuthenticated, valoracionesMedias, loadingComentarios, errorComentarios } = this.props;
+    const { libro, loadingLibros, errorLibros, isAuthenticated, valoracionMedia, loadingComentarios, errorComentarios } = this.props;
 
     if (loadingLibros || !libro || loadingComentarios) {
       return <IndicadorActividad />;
@@ -199,7 +201,7 @@ class DetalleLibro extends Component {
           toggleModal={this.toggleModal}
           isAuthenticated={isAuthenticated}
           libro={libro}
-          valoracionMedia={valoracionesMedias[libro.idLibro]}
+          valoracionMedia={valoracionMedia}
         />
         <Modal
           animationType="slide"
