@@ -53,9 +53,9 @@ class Perfil extends Component {
     this.unsubscribeAuth = this.props.checkAuthState();
     this.props.fetchComentariosUsuario(this.props.user.uid);
     this.props.fetchDiscusionesUsuario(this.props.user.uid);
-    this.props.fetchLibrosEstados(this.props.user.uid, "leyendo");
-    this.props.fetchLibrosEstados(this.props.user.uid, "leido");
-    this.props.fetchLibrosEstados(this.props.user.uid, "pendiente");
+    this.props.fetchLibrosEstados(this.props.user.uid, "Leyendo");
+    this.props.fetchLibrosEstados(this.props.user.uid, "Leido");
+    this.props.fetchLibrosEstados(this.props.user.uid, "Pendiente");
   }
 
   componentWillUnmount() {

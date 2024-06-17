@@ -28,7 +28,6 @@ export const fetchLibrosEstados = (idUsuario, listName) => {
                 const idsLibros = Object.keys(librosData);
                 dispatch(librosEstadosSuccess(idsLibros));
             } else {
-                createEstadosDefault(idUsuario);
                 dispatch(librosEstadosSuccess([]));
             }
         }
@@ -36,15 +35,6 @@ export const fetchLibrosEstados = (idUsuario, listName) => {
             dispatch(librosEstadosError(error.message));
         }
     }
-}
-
-const createEstadosDefault = async (idUsuario) => {
-    const estadosRef = ref(db, `estados/${idUsuario}`);
-    await set(estadosRef, {
-        Leido: { "1": 1 },
-        Leyendo: { "1": 1 },
-        Pendiente: { "1": 1 }
-    });
 }
 
 export const addLibroEstadosLoading = () => ({
