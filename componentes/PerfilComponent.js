@@ -19,6 +19,7 @@ import { fetchLibros } from "../redux/actions/libros";
 import { IndicadorActividad } from "./IndicadorActividadComponent";
 import { checkAuthState } from "../redux/actions/autenticacion";
 import { fetchComentariosUsuario } from "../redux/actions/comentarios";
+import { fetchDiscusionesUsuario } from "../redux/actions/discusiones";
 
 const mapStateToProps = (state) => ({
   user: state.autenticacion.user,
@@ -28,18 +29,25 @@ const mapStateToProps = (state) => ({
   errorComentarios: state.comentarios.errMess,
   libros: state.libros.libros,
   comentarios: state.comentarios.comentarios,
+  discusiones: state.discusiones.discusiones,
+  errorDiscusiones: state.discusiones.errMess,
+  loadingDiscusiones: state.discusiones.loading,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   checkAuthState: () => dispatch(checkAuthState()),
   fetchLibros: () => dispatch(fetchLibros()),
-  fetchComentariosUsuario: (idUsuario) => dispatch(fetchComentariosUsuario(idUsuario)),
+  fetchComentariosUsuario: (idUsuario) =>
+    dispatch(fetchComentariosUsuario(idUsuario)),
+  fetchDiscusionesUsuario: (idUsuario) =>
+    dispatch(fetchDiscusionesUsuario(idUsuario)),
 });
 class Perfil extends Component {
   componentDidMount() {
     this.props.fetchLibros();
     this.unsubscribeAuth = this.props.checkAuthState();
     this.props.fetchComentariosUsuario(this.props.user.uid);
+    this.props.fetchDiscusionesUsuario(this.props.user.uid);
   }
 
   componentWillUnmount() {
@@ -49,11 +57,29 @@ class Perfil extends Component {
   }
   render() {
     const { navigate } = this.props.navigation;
-    const { user, libros, comentarios, loading, loadingComentarios, error, errorComentarios } = this.props;
+    const { user, libros, comentarios, discusiones, loading, loadingComentarios, loadingDiscusiones, error, errorComentarios, errorDiscusiones } = this.props;
 
+    if (loading || loadingComentarios || loadingDiscusiones) {
+      return <IndicadorActividad />;
+    }
+
+    if (error || errorComentarios || errorDiscusiones) {
+      console.log("Error: ", error, errorComentarios, errorDiscusiones);
+      return (
+        <View>
+          <Text>Error al cargar el Perfil.</Text>
+        </View>
+      );
+    }
     function Boton(props) {
       if (props.data === undefined || props.data.length === undefined) {
         props.data.length = 0;
+      }
+      let idLibros = [];
+      if (!props.isComentarios && props.data.length !== 0) {
+        props.data.forEach((libro) => {
+          idLibros.push(libro.idLibro);
+        });
       }
       return (
         <View>
@@ -66,8 +92,9 @@ class Perfil extends Component {
                 props.isComentarios
                   ? navigate("MisComentarios")
                   : navigate("BibliotecaFiltrada", {
-                    estado: props.titulo,
-                  });
+                      estado: props.titulo,
+                      idLibros: idLibros,
+                    });
               }
             }}>
             <View
@@ -100,18 +127,6 @@ class Perfil extends Component {
       );
     }
 
-    if (loading || loadingComentarios) {
-      return <IndicadorActividad />;
-    }
-
-    if (error || errorComentarios) {
-      console.log("Error: ", error, errorComentarios);
-      return (
-        <View>
-          <Text>Error al cargar el Perfil.</Text>
-        </View>
-      );
-    }
     return (
       <ScrollView style={styles.container}>
         <View>
@@ -133,7 +148,7 @@ class Perfil extends Component {
           <Boton titulo={"Leyendo"} icono={"book"} data={libros} />
         </View>
         <View>
-          <Boton titulo={"Discusiones"} icono={"comment"} data={libros} />
+          <Boton titulo={"Discusiones"} icono={"comment"} data={discusiones} />
         </View>
         <View>
           <Boton

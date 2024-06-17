@@ -1,7 +1,18 @@
 import { Component } from "react";
-import { FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity } from "react-native";
+import {
+  FlatList,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+} from "react-native";
 import { connect } from "react-redux";
-import { colorAmarillo, colorAmarilloClaro, colorAzul, colorAzulClaro } from "../app.config";
+import {
+  colorAmarillo,
+  colorAmarilloClaro,
+  colorAzul,
+  colorAzulClaro,
+} from "../app.config";
 import { View } from "react-native";
 import { Icon } from "@rneui/themed";
 import { ListItem } from "react-native-elements";
@@ -23,7 +34,8 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   checkAuthState: () => dispatch(checkAuthState()),
-  fetchComentariosUsuario: (idUsuario) => dispatch(fetchComentariosUsuario(idUsuario)),
+  fetchComentariosUsuario: (idUsuario) =>
+    dispatch(fetchComentariosUsuario(idUsuario)),
   fetchLibrosPorIds: (idsLibro) => dispatch(fetchLibrosPorIds(idsLibro)),
 });
 
@@ -31,17 +43,11 @@ class MisComentarios extends Component {
   componentDidMount() {
     this.props.fetchComentariosUsuario(this.props.user.uid);
     this.unsubscribeAuth = this.props.checkAuthState();
-  }
-
-  componentDidUpdate(prevProps) {
     let idLibros = [];
-    if (this.props.comentarios !== prevProps.comentarios) {
-      this.props.comentarios.forEach((comentario) => {
-        idLibros.push(comentario.idLibro);
-      });
-      this.props.fetchLibrosPorIds(idLibros);
-    }
-  
+    this.props.comentarios.forEach((comentario) => {
+      idLibros.push(comentario.idLibro);
+    });
+    this.props.fetchLibrosPorIds(idLibros);
   }
 
   componentWillUnmount() {
@@ -51,7 +57,8 @@ class MisComentarios extends Component {
   }
   render() {
     const { navigate } = this.props.navigation;
-    const { isAuthenticated, comentarios, loading, error, user, libros } = this.props;
+    const { isAuthenticated, comentarios, loading, error, user, libros } =
+      this.props;
 
     if (loading) {
       return <IndicadorActividad />;
@@ -96,7 +103,12 @@ class MisComentarios extends Component {
           key={index}
           bottomDivider>
           <TouchableOpacity
-          onPress={() => navigate("Biblioteca",{screen: "DetalleLibro", params: { idLibro: item.idLibro },})}
+            onPress={() =>
+              navigate("Biblioteca", {
+                screen: "DetalleLibro",
+                params: { idLibro: item.idLibro },
+              })
+            }
             style={{
               backgroundColor: colorAzulClaro,
               padding: 20,
@@ -108,8 +120,10 @@ class MisComentarios extends Component {
             }}>
             <View style={{ flexDirection: "row" }}>
               <View style={{ flex: 1 }}>
-              {/* Aqui iría el nombre del libro */}
-                <Text style={{ fontWeight: "bold" }}>{libros[index].titulo}</Text>   
+                {/* Aqui iría el nombre del libro */}
+                <Text style={{ fontWeight: "bold" }}>
+                  {libros[index].titulo}
+                </Text>
               </View>
               <Text style={styles.fecha}>{formatDate(item.fecha)}</Text>
             </View>

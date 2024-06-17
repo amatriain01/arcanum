@@ -39,6 +39,30 @@ export const fetchDiscusiones = (idLibro) => {
     };
 };
 
+export const fetchDiscusionesUsuario = (idUsuario) => {
+    return async (dispatch) => {
+        dispatch(discusionesLoading());
+
+        try {
+            const discusionesRef = ref(db, 'discusiones');
+            const snapshot = await get(discusionesRef);
+            if (snapshot.exists()) {
+                const discusionesData = snapshot.val();
+                const discusionesList = Object.keys(discusionesData)
+                    .map(key => ({ idDiscusion: key, ...discusionesData[key] }))
+                    .filter(discussion => discussion.idUsuario === idUsuario);
+
+                dispatch(discusionesSuccess(discusionesList));
+            } else {
+                dispatch(discusionesError("No se encontraron discusiones en la base de datos"));
+            }
+        } catch (error) {
+            dispatch(discusionesError(error.message));
+        }
+    };
+};
+
+
 
 export const addDiscusion = (discusion) => ({
     type: ActionTypes.ADD_DISCUSION,

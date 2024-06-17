@@ -6,7 +6,7 @@ import LibroSimple from "./LibroSimpleComponent";
 import { IndicadorActividad } from "./IndicadorActividadComponent";
 import { FlatList, SafeAreaView, StyleSheet, View } from "react-native";
 import { Text } from "react-native";
-import { fetchLibros } from "../redux/actions/libros";
+import { fetchLibrosPorIds } from "../redux/actions/libros";
 
 const mapStateToProps = (state) => ({
   loading: state.libros.loading,
@@ -15,7 +15,7 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  fetchLibros: () => dispatch(fetchLibros()), //aqui cambiar por la que coge los libros segun el estado y el usuario
+  fetchLibrosPorIds: (idLibros) => dispatch(fetchLibrosPorIds(idLibros)),
 });
 
 class BibliotecaFiltrada extends Component {
@@ -28,17 +28,20 @@ class BibliotecaFiltrada extends Component {
         this.props.navigation.setOptions({ title: "Mis Discusiones" });
       }
     }
-    this.props.fetchLibros();
+    const { idLibros } = this.props.route.params;
+    this.props.fetchLibrosPorIds(idLibros);
   }
 
   componentDidUpdate(prevProps) {
     const { estado } = this.props.route.params;
-    if (prevProps.route.params.title !== estado) {
+    if (prevProps.route.params.estado !== estado) {
       if (estado !== "Discusiones") {
         this.props.navigation.setOptions({ title: "Mis Libros " + estado });
       } else {
         this.props.navigation.setOptions({ title: "Mis Discusiones" });
       }
+      const { idLibros } = this.props.route.params;
+      this.props.fetchLibrosPorIds(idLibros);
     }
   }
 
@@ -65,7 +68,7 @@ class BibliotecaFiltrada extends Component {
     const renderBibliotecaItem = ({ item, index }) => {
       return (
         <ListItem
-          containerStyle={styles.container}
+          containerStyle={[styles.container, { height: 200 }]}
           key={index}
           onPress={() => {
             if (isDiscusion) {
@@ -89,7 +92,7 @@ class BibliotecaFiltrada extends Component {
     };
 
     return (
-      <SafeAreaView>
+      <SafeAreaView style={styles.container}>
         <FlatList
           data={libros}
           renderItem={renderBibliotecaItem}
@@ -104,7 +107,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colorAzulClaro,
-    height: 200,
   },
 });
 
