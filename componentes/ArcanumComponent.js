@@ -2,11 +2,14 @@ import { Component } from "react";
 import Constants from "expo-constants";
 import React from "react";
 import { Image, Platform, StyleSheet, Text, View } from "react-native";
-import Falso from "./FalsoComponent";
 import Login from "./LoginComponent";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { DrawerActions, NavigationContainer } from "@react-navigation/native";
-import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList } from "@react-navigation/drawer";
+import {
+  createDrawerNavigator,
+  DrawerContentScrollView,
+  DrawerItemList,
+} from "@react-navigation/drawer";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Icon } from "@rneui/themed";
 import { colorAmarillo, colorAmarilloClaro, colorAzul } from "../app.config";
@@ -20,6 +23,9 @@ import DetalleLibro from "./DetalleLibroComponent";
 import Discusion from "./DiscusionComponent";
 import EscribirMensaje from "./EscribirMensajeComponent";
 import Comentarios from "./ComentariosComponent";
+import Perfil from "./PerfilComponent";
+import BibliotecaFiltrada from "./BibliotecaFiltradaComponent";
+import MisComentarios from "./MisComentariosComponent";
 
 const mapStateToProps = (state) => ({
   isAuthenticated: state.autenticacion.isAuthenticated,
@@ -126,16 +132,17 @@ function LoginNavegador({ navigation }) {
 function BibliotecaNavegador({ navigation }) {
   return (
     <Stack.Navigator
-      initialRouteName="BibliotecaNavegador"
+      initialRouteName="BibliotecaInicial"
       screenOptions={{
         headerMode: "screen",
         headerTintColor: colorAmarillo,
         headerTitleAlign: "center",
         headerStyle: { backgroundColor: colorAzul },
         headerTitleStyle: { color: colorAmarillo },
+        lazy: false,
       }}>
       <Stack.Screen
-        name="BibliotecaNavegador"
+        name="BibliotecaInicial"
         component={Biblioteca}
         options={{
           title: "Biblioteca",
@@ -152,16 +159,32 @@ function BibliotecaNavegador({ navigation }) {
       <Stack.Screen
         name="DetalleLibro"
         component={DetalleLibro}
-        options={{
-          title: "Detalles del libro",
-        }}
+        options={({ navigation }) => ({
+          title: "Detalles del Libro",
+          headerLeft: () => (
+            <Icon
+              name="arrow-back"
+              size={28}
+              color={colorAmarillo}
+              onPress={() => navigation.goBack()}
+            />
+          ),
+        })}
       />
       <Stack.Screen
         name="Discusion"
         component={Discusion}
-        options={{
+        options={({ navigation }) => ({
           title: "Discusion",
-        }}
+          headerLeft: () => (
+            <Icon
+              name="arrow-back"
+              size={28}
+              color={colorAmarillo}
+              onPress={() => navigation.goBack()}
+            />
+          ),
+        })}
       />
       <Stack.Screen
         name="Comentarios"
@@ -191,20 +214,34 @@ function PerfilNavegador({ navigation }) {
         headerTitleAlign: "center",
         headerStyle: { backgroundColor: colorAzul },
         headerTitleStyle: { color: colorAmarillo },
-        headerLeft: () => (
-          <Icon
-            name="menu"
-            size={28}
-            color={colorAmarillo}
-            onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
-          />
-        ),
       }}>
       <Stack.Screen
         name="PerfilNavegador"
-        component={Falso}
+        component={Perfil}
         options={{
           title: "Mi Perfil",
+          headerLeft: () => (
+            <Icon
+              name="menu"
+              size={28}
+              color={colorAmarillo}
+              onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
+            />
+          ),
+        }}
+      />
+      <Stack.Screen
+        name="BibliotecaFiltrada"
+        component={BibliotecaFiltrada}
+        options={{
+          title: "Mis Libros",
+        }}
+      />
+      <Stack.Screen
+        name="MisComentarios"
+        component={MisComentarios}
+        options={{
+          title: "Mis Comentarios",
         }}
       />
     </Stack.Navigator>
@@ -241,36 +278,6 @@ function LogoutNavegador({ navigation }) {
   );
 }
 
-function EventosNavegador({ navigation }) {
-  return (
-    <Stack.Navigator
-      initialRouteName="EventosNavegador"
-      screenOptions={{
-        headerMode: "screen",
-        headerTintColor: colorAmarillo,
-        headerTitleAlign: "center",
-        headerStyle: { backgroundColor: colorAzul },
-        headerTitleStyle: { color: colorAmarillo },
-        headerLeft: () => (
-          <Icon
-            name="menu"
-            size={28}
-            color={colorAmarillo}
-            onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
-          />
-        ),
-      }}>
-      <Stack.Screen
-        name="EventosNavegador"
-        component={Falso}
-        options={{
-          title: "Eventos",
-        }}
-      />
-    </Stack.Navigator>
-  );
-}
-
 function DrawerNavegador(props) {
   return (
     <Drawer.Navigator
@@ -298,7 +305,12 @@ function DrawerNavegador(props) {
           initialParams={{ screen: "LoginNavegador" }}
           options={{
             drawerIcon: ({ tintColor }) => (
-              <Icon name="user" type="font-awesome" size={24} color={tintColor} />
+              <Icon
+                name="user"
+                type="font-awesome"
+                size={24}
+                color={tintColor}
+              />
             ),
           }}
         />
@@ -307,6 +319,7 @@ function DrawerNavegador(props) {
         <Drawer.Screen
           name="Mi Perfil"
           component={PerfilNavegador}
+          initialParams={{ screen: "PerfilNavegador" }}
           options={{
             drawerIcon: ({ tintColor }) => (
               <Icon
@@ -322,24 +335,10 @@ function DrawerNavegador(props) {
       <Drawer.Screen
         name="Biblioteca"
         component={BibliotecaNavegador}
-        initialParams={{ screen: "BibliotecaNavegador" }}
+        initialParams={{ screen: "BibliotecaInicial" }}
         options={{
           drawerIcon: ({ tintColor }) => (
             <Icon name="book" type="font-awesome" size={24} color={tintColor} />
-          ),
-        }}
-      />
-      <Drawer.Screen
-        name="Eventos"
-        component={EventosNavegador}
-        options={{
-          drawerIcon: ({ tintColor }) => (
-            <Icon
-              name="bullhorn"
-              type="font-awesome"
-              size={24}
-              color={tintColor}
-            />
           ),
         }}
       />
