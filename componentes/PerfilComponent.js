@@ -1,5 +1,6 @@
 import { Component } from "react";
 import {
+  Modal,
   ScrollView,
   StyleSheet,
   Text,
@@ -45,17 +46,25 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(fetchComentariosUsuario(idUsuario)),
   fetchDiscusionesUsuario: (idUsuario) =>
     dispatch(fetchDiscusionesUsuario(idUsuario)),
-  fetchLibrosEstados: (idUsuario, listName) =>
-    dispatch(fetchLibrosEstados(idUsuario, listName)),
+  // fetchLibrosEstados: (idUsuario, listName) =>
+  //   dispatch(fetchLibrosEstados(idUsuario, listName)),
 });
 class Perfil extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      showModal: false,
+    };
+    this.toggleModal = this.toggleModal.bind(this);
+    this.closeModal = this.closeModal.bind(this);
+  }
   componentDidMount() {
     this.unsubscribeAuth = this.props.checkAuthState();
     this.props.fetchComentariosUsuario(this.props.user.uid);
     this.props.fetchDiscusionesUsuario(this.props.user.uid);
-    this.props.fetchLibrosEstados(this.props.user.uid, "leyendo");
-    this.props.fetchLibrosEstados(this.props.user.uid, "leido");
-    this.props.fetchLibrosEstados(this.props.user.uid, "pendiente");
+    // this.props.fetchLibrosEstados(this.props.user.uid, "leyendo");
+    // this.props.fetchLibrosEstados(this.props.user.uid, "leido");
+    // this.props.fetchLibrosEstados(this.props.user.uid, "pendiente");
   }
 
   componentWillUnmount() {
@@ -63,6 +72,15 @@ class Perfil extends Component {
       this.unsubscribeAuth();
     }
   }
+
+  toggleModal() {
+    this.setState({ showModal: !this.state.showModal });
+  }
+
+  closeModal() {
+    this.setState({ showModal: false });
+  }
+
   render() {
     const { navigate } = this.props.navigation;
     const {
@@ -118,7 +136,8 @@ class Perfil extends Component {
             icono={"check"}
             data={leido}
             navigate={this.props.navigation.navigate}
-          />
+            toggleModal={this.toggleModal}
+/>
         </View>
         <View>
           <BotonPerfil
@@ -126,7 +145,8 @@ class Perfil extends Component {
             icono={"clock-o"}
             data={pendiente}
             navigate={this.props.navigation.navigate}
-          />
+            toggleModal={this.toggleModal}
+/>
         </View>
         <View>
           <BotonPerfil
@@ -134,7 +154,8 @@ class Perfil extends Component {
             icono={"book"}
             data={leyendo}
             navigate={this.props.navigation.navigate}
-          />
+            toggleModal={this.toggleModal}
+            />
         </View>
         <View>
           <BotonPerfil
@@ -142,6 +163,7 @@ class Perfil extends Component {
             icono={"comment"}
             data={discusiones}
             navigate={this.props.navigation.navigate}
+            toggleModal={this.toggleModal}
           />
         </View>
         <View>
@@ -150,6 +172,7 @@ class Perfil extends Component {
             icono={"star"}
             data={comentarios}
             navigate={this.props.navigation.navigate}
+            toggleModal={this.toggleModal}
             isComentarios={true}
           />
         </View>
@@ -158,6 +181,37 @@ class Perfil extends Component {
           buttonStyle={styles.logoutButton}
           onPress={() => navigate("Cerrar Sesión")}
         />
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={this.state.showModal}
+          onRequestClose={this.closeModal}>
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+            }}>
+            <View
+              style={{
+                backgroundColor: colorAmarilloClaro,
+                padding: 20,
+                borderRadius: 10,
+              }}>
+              <TouchableOpacity
+                onPress={this.closeModal}
+                style={{
+                  position: "absolute",
+                  right: 5,
+                  top: 5,
+                }}>
+                <Icon name="times" type="font-awesome" size={20} />
+              </TouchableOpacity>
+              <Text style={styles.texto}>No hay información disponible.</Text>
+            </View>
+          </View>
+        </Modal>
       </ScrollView>
     );
   }

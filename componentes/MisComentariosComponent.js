@@ -65,13 +65,20 @@ class MisComentarios extends Component {
   }
   render() {
     const { navigate } = this.props.navigation;
-    const { comentarios, loading, error, libros } = this.props;
+    const {
+      comentarios,
+      loading,
+      error,
+      libros,
+      loadingComentarios,
+      errorComentarios,
+    } = this.props;
 
-    if (loading) {
+    if (loading || loadingComentarios) {
       return <IndicadorActividad />;
     }
 
-    if (error) {
+    if (error || errorComentarios) {
       console.log("Error: ", error);
       return (
         <View>
@@ -104,6 +111,10 @@ class MisComentarios extends Component {
     }
 
     const renderComentariosItem = ({ item, index }) => {
+      let titulo = "";
+      if(libros[index] !== undefined){
+        titulo = libros[index].titulo;
+      }
       return (
         <ListItem
           containerStyle={styles.containerComentario}
@@ -127,9 +138,8 @@ class MisComentarios extends Component {
             }}>
             <View style={{ flexDirection: "row" }}>
               <View style={{ flex: 1 }}>
-                {/* Aqui iría el nombre del libro */}
                 <Text style={{ fontWeight: "bold" }}>
-                  {libros[index].titulo}
+                  {titulo}
                 </Text>
               </View>
               <Text style={styles.fecha}>{formatDate(item.fecha)}</Text>
