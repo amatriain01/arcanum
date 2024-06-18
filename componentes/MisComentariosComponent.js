@@ -161,20 +161,6 @@ class MisComentarios extends Component {
 
     return (
       <SafeAreaView style={styles.container}>
-        <View style={{ backgroundColor: colorAzul, paddingBottom: 10 }}>
-          <Icon
-            name="plus-circle"
-            type="font-awesome"
-            size={28}
-            color={colorAmarillo}
-            onPress={() =>
-              navigate("EscribirMensaje", {
-                idLibro: idLibro,
-                origen: "Comentarios",
-              })
-            }
-          />
-        </View>
         <FlatList
           data={comentarios}
           renderItem={renderComentariosItem}
