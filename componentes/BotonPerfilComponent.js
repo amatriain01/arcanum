@@ -16,9 +16,15 @@ const BotonPerfil = (props) => {
   }
   let idLibros = [];
   if (!props.isComentarios && length !== 0) {
-    props.data.forEach((libro) => {
-      idLibros.push(libro.idLibro);
-    });
+    if (props.titulo === "Discusiones") {
+      props.data.forEach((libro) => {
+        if (!idLibros.includes(libro.idLibro)) {
+          idLibros.push(libro.idLibro);
+        }
+      });
+    }else{
+      idLibros=props.data;
+    }
   }
   return (
     <View>
@@ -26,7 +32,7 @@ const BotonPerfil = (props) => {
         style={styles.boton}
         onPress={() => {
           if (length === 0) {
-            alert("No hay información disponible.");
+            props.toggleModal();
           } else {
             props.isComentarios
               ? navigate("MisComentarios")
@@ -50,7 +56,7 @@ const BotonPerfil = (props) => {
               color: colorAzul,
               marginLeft: 10,
             }}>
-            {props.titulo} ({length})
+            {props.titulo} ({props.isComentarios ? length : idLibros.length})
           </Text>
         </View>
         <Icon
