@@ -218,7 +218,7 @@ class DetalleLibro extends Component {
                         idLibro: libro.idLibro,
                       });
                     } else {
-                      toggleModal();
+                      this.toggleModal();
                     }
                   }}>
                   <View style={{ flex: 1, alignItems: "center" }}>
@@ -242,7 +242,7 @@ class DetalleLibro extends Component {
                         idLibro: libro.idLibro,
                       });
                     } else {
-                      toggleModal();
+                      this.toggleModal();
                     }
                   }}>
                   <View style={{ flex: 1, alignItems: "center" }}>
