@@ -61,22 +61,31 @@ class DetalleLibro extends Component {
     this.closeModal = this.closeModal.bind(this);
   }
 
-  handleSelect = async (selected) => {
+  handleSelect = async (selectedKey) => {
     const { libro, isAuthenticated, moveLibroEstados, removeLibroEstados, addLibroEstados, user } = this.props;
     const { selected: oldSelected } = this.state;
-    if (selected !== oldSelected) {
+    const listadoEstados = [
+      { key: 0, value: "Sin estado" },
+      { key: 1, value: "Pendiente" },
+      { key: 2, value: "Leyendo" },
+      { key: 3, value: "Leido" },
+    ];
+
+    const selectedValue = listadoEstados.find(item => item.key === selectedKey)?.value || "Sin estado";
+
+    if (selectedValue !== oldSelected) {
       if (isAuthenticated) {
         if (oldSelected === "Sin estado") {
-          addLibroEstados(user.uid, selected, libro.idLibro);
-        } else if (selected === "Sin estado") {
+          addLibroEstados(user.uid, selectedValue, libro.idLibro);
+        } else if (selectedValue === "Sin estado") {
           removeLibroEstados(user.uid, oldSelected, libro.idLibro);
         } else {
-          moveLibroEstados(user.uid, oldSelected, selected, libro.idLibro);
+          moveLibroEstados(user.uid, oldSelected, selectedValue, libro.idLibro);
         }
-        this.setState({ selected });
+        this.setState({ selected: selectedValue });
         try {
-          await AsyncStorage.setItem(`selectedEstado_${libro.idLibro}_${user.uid}`, selected.toString());
-          console.log('Guardado en AsyncStorage:', selected);
+          await AsyncStorage.setItem(`selectedEstado_${libro.idLibro}_${user.uid}`, selectedValue);
+          console.log('Guardado en AsyncStorage:', selectedValue);
         } catch (error) {
           console.log('Error al guardar en AsyncStorage:', error);
         }
@@ -84,7 +93,6 @@ class DetalleLibro extends Component {
         this.toggleModal();
       }
     }
-
   };
 
   toggleModal() {
@@ -95,25 +103,35 @@ class DetalleLibro extends Component {
     this.setState({ showModal: false });
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const { idLibro } = this.props.route.params;
     const { user } = this.props;
+    const listadoEstados = [
+      { key: 0, value: "Sin estado" },
+      { key: 1, value: "Pendiente" },
+      { key: 2, value: "Leyendo" },
+      { key: 3, value: "Leido" },
+    ];
 
     if (idLibro) {
       this.props.fetchDetalleLibro(idLibro);
       this.props.fetchComentariosValoracionMedia(idLibro);
     }
-    this.focusListener = this.props.navigation.addListener("focus", () => {
+
+    this.focusListener = this.props.navigation.addListener("focus", async () => {
       this.props.fetchDetalleLibro(idLibro);
       this.props.fetchComentariosValoracionMedia(idLibro);
-      AsyncStorage.getItem(`selectedEstado_${idLibro}_${user.uid}`).then(selected => {
-        if (selected) {
+      try {
+        const selected = await AsyncStorage.getItem(`selectedEstado_${idLibro}_${user.uid}`);
+        if (selected && listadoEstados.some(option => option.value === selected)) {
           this.setState({ selected });
+        } else {
+          this.setState({ selected: "Sin estado" });
         }
-        console.log('Recuperado de AsyncStorage:', selected)
-      }).catch(error => {
+        console.log('Recuperado de AsyncStorage:', selected);
+      } catch (error) {
         console.log('Error al recuperar de AsyncStorage:', error);
-      });
+      }
     });
     this.unsubscribeAuth = this.props.checkAuthState();
   }
@@ -172,8 +190,8 @@ class DetalleLibro extends Component {
                   setSelected={this.handleSelect}
                   data={listadoEstados}
                   search={false}
-                  save="value"
-                  defaultOption={{ key: 0, value: "Sin estado" }}
+                  save="key"
+                  defaultOption={listadoEstados.find(option => option.value === this.state.selected) || { key: 0, value: "Sin estado" }}
                   style={{ width: 300, color: colorAzul }}
                 />
                 <Text style={styles.texto}>Autor: {libro.autor}</Text>
