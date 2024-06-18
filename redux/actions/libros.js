@@ -35,25 +35,39 @@ export const fetchLibros = () => {
   };
 };
 
+export const librosPorIdsLoading = () => ({
+  type: ActionTypes.LIBROS_ID_LOADING,
+});
+
+export const librosPorIdsSuccess = (libros) => ({
+  type: ActionTypes.LIBROS_ID_SUCCESS,
+  payload: libros,
+});
+
+export const librosPorIdsError = (errMess) => ({
+  type: ActionTypes.LIBROS_ID_ERROR,
+  payload: errMess,
+});
+
 export const fetchLibrosPorIds = (idsLibro) => {
   return async (dispatch) => {
-    dispatch(librosLoading());
+    dispatch(librosPorIdsLoading());
 
     try {
-      const libros = [];
+      const librosPorIds = [];
       for (const idLibro of idsLibro) {
         const libroRef = ref(db, `libros/${idLibro}`);
         const snapshot = await get(libroRef);
         if (snapshot.exists()) {
           const libroData = snapshot.val();
-          libros.push(libroData);
+          librosPorIds.push(libroData);
         } else {
-          dispatch(librosError(`No se encontró el id del libro: ${idLibro}`));
+          dispatch(librosPorIdsError(`No se encontró el id del libro: ${idLibro}`));
         }
       }
-      dispatch(librosSuccess(libros));
+      dispatch(librosPorIdsSuccess(librosPorIds));
     } catch (error) {
-      dispatch(librosError(error.message));
+      dispatch(librosPorIdsError(error.message));
     }
   };
 };

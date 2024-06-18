@@ -11,7 +11,7 @@ import { fetchLibrosPorIds } from "../redux/actions/libros";
 const mapStateToProps = (state) => ({
   loading: state.libros.loading,
   error: state.libros.errMess,
-  libros: state.libros.libros,
+  librosPorIds: state.libros.librosPorIds,
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -47,7 +47,7 @@ class BibliotecaFiltrada extends Component {
 
   render() {
     const { navigate } = this.props.navigation;
-    const { libros, loading, error } = this.props;
+    const { librosPorIds, loading, error } = this.props;
     const { estado } = this.props.route.params;
 
     const isDiscusion = estado === "Discusiones";
@@ -94,7 +94,7 @@ class BibliotecaFiltrada extends Component {
     return (
       <SafeAreaView style={styles.container}>
         <FlatList
-          data={libros}
+          data={librosPorIds}
           renderItem={renderBibliotecaItem}
           keyExtractor={(item) => item.idLibro.toString()}
         />

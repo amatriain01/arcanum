@@ -76,6 +76,26 @@ class Inicio extends Component {
       );
     }
 
+    function obtenerElementosAleatorios() {
+      if (libros.length <= 5) {
+        return libros.slice();
+      }
+          
+      let elementosAleatorios = [];
+      let indicesUtilizados = new Set();
+    
+      while (elementosAleatorios.length < 5) {
+        let indiceAleatorio = Math.floor(Math.random() * libros.length);
+    
+        if (!indicesUtilizados.has(indiceAleatorio)) {
+          indicesUtilizados.add(indiceAleatorio);
+          elementosAleatorios.push(libros[indiceAleatorio]);
+        }
+      }
+    
+      return elementosAleatorios;
+    };
+
     function ListadoElementos(props) {
       return (
         <View>
@@ -151,7 +171,7 @@ class Inicio extends Component {
         </View>
         <ListadoElementos
           titulo={"Libros Destacados"}
-          data={libros.slice(0, 5)}
+          data={obtenerElementosAleatorios()}
         />
       </ScrollView>
     );
