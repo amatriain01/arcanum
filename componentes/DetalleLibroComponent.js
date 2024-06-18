@@ -1,6 +1,6 @@
 import { LogBox } from "react-native";
 LogBox.ignoreLogs(["Warning: ..."]);
-import { Component, useState } from "react";
+import { Component } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -23,6 +23,7 @@ import { fetchDetalleLibro } from "../redux/actions/libros";
 import { IndicadorActividad } from "./IndicadorActividadComponent";
 import { fetchComentariosValoracionMedia } from "../redux/actions/comentarios";
 import { moveLibroEstados, removeLibroEstados, addLibroEstados } from "../redux/actions/estados";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const mapStateToProps = (state) => ({
   isAuthenticated: state.autenticacion.isAuthenticated,
@@ -60,7 +61,7 @@ class DetalleLibro extends Component {
     this.closeModal = this.closeModal.bind(this);
   }
 
-  handleSelect = (selected) => {
+  handleSelect = async (selected) => {
     const { libro, isAuthenticated, moveLibroEstados, removeLibroEstados, addLibroEstados, user } = this.props;
     const { selected: oldSelected } = this.state;
     if (selected !== oldSelected) {
@@ -73,6 +74,12 @@ class DetalleLibro extends Component {
           moveLibroEstados(user.uid, oldSelected, selected, libro.idLibro);
         }
         this.setState({ selected });
+        try {
+          await AsyncStorage.setItem(`selectedEstado_${libro.idLibro}_${user.uid}`, selected.toString());
+          console.log('Guardado en AsyncStorage:', selected);
+        } catch (error) {
+          console.log('Error al guardar en AsyncStorage:', error);
+        }
       } else {
         this.toggleModal();
       }
@@ -90,6 +97,7 @@ class DetalleLibro extends Component {
 
   componentDidMount() {
     const { idLibro } = this.props.route.params;
+    const { user } = this.props;
 
     if (idLibro) {
       this.props.fetchDetalleLibro(idLibro);
@@ -98,6 +106,14 @@ class DetalleLibro extends Component {
     this.focusListener = this.props.navigation.addListener("focus", () => {
       this.props.fetchDetalleLibro(idLibro);
       this.props.fetchComentariosValoracionMedia(idLibro);
+      AsyncStorage.getItem(`selectedEstado_${idLibro}_${user.uid}`).then(selected => {
+        if (selected) {
+          this.setState({ selected });
+        }
+        console.log('Recuperado de AsyncStorage:', selected)
+      }).catch(error => {
+        console.log('Error al recuperar de AsyncStorage:', error);
+      });
     });
     this.unsubscribeAuth = this.props.checkAuthState();
   }
