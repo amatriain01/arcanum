@@ -20,7 +20,7 @@ import { IndicadorActividad } from "./IndicadorActividadComponent";
 import { checkAuthState } from "../redux/actions/autenticacion";
 import { fetchComentariosUsuario } from "../redux/actions/comentarios";
 import { fetchDiscusionesUsuario } from "../redux/actions/discusiones";
-import { fetchLibrosEstados } from "../redux/actions/estados";
+import { fetchLibrosEstadosPendiente, fetchLibrosEstadosLeido, fetchLibrosEstadosLeyendo } from "../redux/actions/estados";
 import BotonPerfil from "./BotonPerfilComponent";
 
 const mapStateToProps = (state) => ({
@@ -33,9 +33,9 @@ const mapStateToProps = (state) => ({
   discusiones: state.discusiones.discusiones,
   errorDiscusiones: state.discusiones.errMess,
   loadingDiscusiones: state.discusiones.loading,
-  leyendo: state.estados.leyendo,
-  leido: state.estados.leido,
-  pendiente: state.estados.pendiente,
+  Leyendo: state.estados.Leyendo,
+  Leido: state.estados.Leido,
+  Pendiente: state.estados.Pendiente,
   loadingEstados: state.estados.loading,
   errorEstados: state.estados.errMess,
 });
@@ -46,8 +46,12 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(fetchComentariosUsuario(idUsuario)),
   fetchDiscusionesUsuario: (idUsuario) =>
     dispatch(fetchDiscusionesUsuario(idUsuario)),
-  fetchLibrosEstados: (idUsuario, listName) =>
-    dispatch(fetchLibrosEstados(idUsuario, listName)),
+  fetchLibrosEstadosLeido: (idUsuario) =>
+    dispatch(fetchLibrosEstadosLeido(idUsuario)),
+  fetchLibrosEstadosLeyendo: (idUsuario) =>
+    dispatch(fetchLibrosEstadosLeyendo(idUsuario)),
+  fetchLibrosEstadosPendiente: (idUsuario) =>
+    dispatch(fetchLibrosEstadosPendiente(idUsuario)),
 });
 class Perfil extends Component {
   constructor(props) {
@@ -62,9 +66,9 @@ class Perfil extends Component {
     this.unsubscribeAuth = this.props.checkAuthState();
     this.props.fetchComentariosUsuario(this.props.user.uid);
     this.props.fetchDiscusionesUsuario(this.props.user.uid);
-    this.props.fetchLibrosEstados(this.props.user.uid, "Leyendo");
-    this.props.fetchLibrosEstados(this.props.user.uid, "Leido");
-    this.props.fetchLibrosEstados(this.props.user.uid, "Pendiente");
+    this.props.fetchLibrosEstadosLeyendo(this.props.user.uid);
+    this.props.fetchLibrosEstadosLeido(this.props.user.uid);
+    this.props.fetchLibrosEstadosPendiente(this.props.user.uid);
   }
 
   componentWillUnmount() {
@@ -93,9 +97,9 @@ class Perfil extends Component {
       error,
       errorComentarios,
       errorDiscusiones,
-      leyendo,
-      leido,
-      pendiente,
+      Leyendo,
+      Leido,
+      Pendiente,
       errorEstados,
       loadingEstados,
     } = this.props;
@@ -134,28 +138,28 @@ class Perfil extends Component {
           <BotonPerfil
             titulo={"Leidos"}
             icono={"check"}
-            data={leido}
+            data={Leido}
             navigate={this.props.navigation.navigate}
             toggleModal={this.toggleModal}
-/>
+          />
         </View>
         <View>
           <BotonPerfil
             titulo={"Pendientes"}
             icono={"clock-o"}
-            data={pendiente}
+            data={Pendiente}
             navigate={this.props.navigation.navigate}
             toggleModal={this.toggleModal}
-/>
+          />
         </View>
         <View>
           <BotonPerfil
             titulo={"Leyendo"}
             icono={"book"}
-            data={leyendo}
+            data={Leyendo}
             navigate={this.props.navigation.navigate}
             toggleModal={this.toggleModal}
-            />
+          />
         </View>
         <View>
           <BotonPerfil
