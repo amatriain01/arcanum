@@ -25,7 +25,7 @@ const mapStateToProps = (state) => ({
   isAuthenticated: state.autenticacion.isAuthenticated,
   user: state.autenticacion.user,
   comentarios: state.comentarios.comentarios,
-  libros: state.libros.libros,
+  librosPorIds: state.libros.librosPorIds,
   loading: state.libros.loading,
   loadingComentarios: state.comentarios.loading,
   error: state.libros.errMess,
@@ -69,7 +69,7 @@ class MisComentarios extends Component {
       comentarios,
       loading,
       error,
-      libros,
+      librosPorIds,
       loadingComentarios,
       errorComentarios,
     } = this.props;
@@ -112,8 +112,8 @@ class MisComentarios extends Component {
 
     const renderComentariosItem = ({ item, index }) => {
       let titulo = "";
-      if(libros[index] !== undefined){
-        titulo = libros[index].titulo;
+      if(librosPorIds[index] !== undefined){
+        titulo = librosPorIds[index].titulo;
       }
       return (
         <ListItem
