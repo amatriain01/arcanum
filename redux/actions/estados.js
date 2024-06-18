@@ -28,7 +28,7 @@ export const fetchLibrosEstados = (idUsuario, listName) => {
                 const idsLibros = Object.keys(librosData);
                 dispatch(librosEstadosSuccess(idsLibros));
             } else {
-                dispatch(librosEstadosError("No se encontraron libros en la base de datos"));
+                dispatch(librosEstadosSuccess([]));
             }
         }
         catch (error) {
@@ -36,7 +36,6 @@ export const fetchLibrosEstados = (idUsuario, listName) => {
         }
     }
 }
-
 
 export const addLibroEstadosLoading = () => ({
     type: ActionTypes.ADD_LIBRO_ESTADOS_LOADING

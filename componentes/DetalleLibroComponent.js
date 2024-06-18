@@ -22,15 +22,20 @@ import { checkAuthState } from "../redux/actions/autenticacion";
 import { fetchDetalleLibro } from "../redux/actions/libros";
 import { IndicadorActividad } from "./IndicadorActividadComponent";
 import { fetchComentariosValoracionMedia } from "../redux/actions/comentarios";
+import { moveLibroEstados, removeLibroEstados, addLibroEstados } from "../redux/actions/estados";
 
 const mapStateToProps = (state) => ({
   isAuthenticated: state.autenticacion.isAuthenticated,
+  user: state.autenticacion.user,
   loadingLibros: state.libros.loading,
   errorLibros: state.libros.errMess,
   libro: state.libros.libro,
   loadingComentarios: state.comentarios.loading,
   errorComentarios: state.comentarios.errMess,
   valoracionMedia: state.comentarios.valoracionMedia,
+  leido: state.estados.leido,
+  leyendo: state.estados.leyendo,
+  pendiente: state.estados.pendiente,
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -38,6 +43,9 @@ const mapDispatchToProps = (dispatch) => ({
   fetchDetalleLibro: (idLibro) => dispatch(fetchDetalleLibro(idLibro)),
   fetchComentariosValoracionMedia: (idLibro) =>
     dispatch(fetchComentariosValoracionMedia(idLibro)),
+  moveLibroEstados: (idUsuario, fromList, toList, idLibro) => dispatch(moveLibroEstados(idUsuario, fromList, toList, idLibro)),
+  removeLibroEstados: (idUsuario, listName, idLibro) => dispatch(removeLibroEstados(idUsuario, listName, idLibro)),
+  addLibroEstados: (idUsuario, listName, idLibro) => dispatch(addLibroEstados(idUsuario, listName, idLibro)),
 });
 
 class DetalleLibro extends Component {
@@ -45,11 +53,32 @@ class DetalleLibro extends Component {
     super(props);
     this.state = {
       showModal: false,
-      selected: "Sin Estado",
+      selected: "Sin estado",
     };
+    this.handleSelect = this.handleSelect.bind(this);
     this.toggleModal = this.toggleModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
   }
+
+  handleSelect = (selected) => {
+    const { libro, isAuthenticated, moveLibroEstados, removeLibroEstados, addLibroEstados, user } = this.props;
+    const { selected: oldSelected } = this.state;
+    if (selected !== oldSelected) {
+      if (isAuthenticated) {
+        if (oldSelected === "Sin estado") {
+          addLibroEstados(user.uid, selected, libro.idLibro);
+        } else if (selected === "Sin estado") {
+          removeLibroEstados(user.uid, oldSelected, libro.idLibro);
+        } else {
+          moveLibroEstados(user.uid, oldSelected, selected, libro.idLibro);
+        }
+        this.setState({ selected });
+      } else {
+        this.toggleModal();
+      }
+    }
+
+  };
 
   toggleModal() {
     this.setState({ showModal: !this.state.showModal });
@@ -70,10 +99,6 @@ class DetalleLibro extends Component {
       this.props.fetchDetalleLibro(idLibro);
       this.props.fetchComentariosValoracionMedia(idLibro);
     });
-    this.unsubscribeAuth = this.props.checkAuthState();
-  }
-
-  componentDidUpdate() {
     this.unsubscribeAuth = this.props.checkAuthState();
   }
 
@@ -113,7 +138,7 @@ class DetalleLibro extends Component {
       { key: 0, value: "Sin estado" },
       { key: 1, value: "Pendiente" },
       { key: 2, value: "Leyendo" },
-      { key: 3, value: "Leído" },
+      { key: 3, value: "Leido" },
     ];
 
     return (
@@ -128,7 +153,7 @@ class DetalleLibro extends Component {
               />
               <View style={styles.info}>
                 <SelectList
-                  setSelected={(val) => this.state.selected = val}
+                  setSelected={this.handleSelect}
                   data={listadoEstados}
                   search={false}
                   save="value"
