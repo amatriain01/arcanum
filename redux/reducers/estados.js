@@ -42,25 +42,13 @@ export const estados = (state = initialState, action) => {
                 [action.payload.toList]: [...state[action.payload.toList], action.payload.idLibro]
             };
 
-        case ActionTypes.FETCH_LIBROS_ESTADOS_SUCCESS_LEIDO:
-            return {
-                ...state,
-                loading: false,
-                Leido: action.payload.Leido,
-            };
-
-        case ActionTypes.FETCH_LIBROS_ESTADOS_SUCCESS_LEYENDO:
+        case ActionTypes.FETCH_LIBROS_ESTADOS_SUCCESS:
             return {
                 ...state,
                 loading: false,
                 Leyendo: action.payload.Leyendo,
-            };
-
-        case ActionTypes.FETCH_LIBROS_ESTADOS_SUCCESS_PENDIENTE:
-            return {
-                ...state,
-                loading: false,
-                Pendiente: action.payload.Pendiente,
+                Leido: action.payload.Leido,
+                Pendiente: action.payload.Pendiente
             };
 
         case ActionTypes.ADD_LIBRO_ESTADOS_ERROR:

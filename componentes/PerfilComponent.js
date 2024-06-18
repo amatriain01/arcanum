@@ -20,7 +20,7 @@ import { IndicadorActividad } from "./IndicadorActividadComponent";
 import { checkAuthState } from "../redux/actions/autenticacion";
 import { fetchComentariosUsuario } from "../redux/actions/comentarios";
 import { fetchDiscusionesUsuario } from "../redux/actions/discusiones";
-import { fetchLibrosEstadosPendiente, fetchLibrosEstadosLeido, fetchLibrosEstadosLeyendo } from "../redux/actions/estados";
+import { fetchLibrosEstados } from "../redux/actions/estados";
 import BotonPerfil from "./BotonPerfilComponent";
 
 const mapStateToProps = (state) => ({
@@ -46,12 +46,8 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(fetchComentariosUsuario(idUsuario)),
   fetchDiscusionesUsuario: (idUsuario) =>
     dispatch(fetchDiscusionesUsuario(idUsuario)),
-  fetchLibrosEstadosLeido: (idUsuario) =>
-    dispatch(fetchLibrosEstadosLeido(idUsuario)),
-  fetchLibrosEstadosLeyendo: (idUsuario) =>
-    dispatch(fetchLibrosEstadosLeyendo(idUsuario)),
-  fetchLibrosEstadosPendiente: (idUsuario) =>
-    dispatch(fetchLibrosEstadosPendiente(idUsuario)),
+  fetchLibrosEstados: (idUsuario) =>
+    dispatch(fetchLibrosEstados(idUsuario)),
 });
 class Perfil extends Component {
   constructor(props) {
@@ -66,9 +62,7 @@ class Perfil extends Component {
     this.unsubscribeAuth = this.props.checkAuthState();
     this.props.fetchComentariosUsuario(this.props.user.uid);
     this.props.fetchDiscusionesUsuario(this.props.user.uid);
-    this.props.fetchLibrosEstadosLeyendo(this.props.user.uid);
-    this.props.fetchLibrosEstadosLeido(this.props.user.uid);
-    this.props.fetchLibrosEstadosPendiente(this.props.user.uid);
+    this.props.fetchLibrosEstados(this.props.user.uid);
   }
 
   componentWillUnmount() {
