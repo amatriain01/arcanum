@@ -85,7 +85,6 @@ class DetalleLibro extends Component {
         this.setState({ selected: selectedValue });
         try {
           await AsyncStorage.setItem(`selectedEstado_${libro.idLibro}_${user.uid}`, selectedValue);
-          console.log('Guardado en AsyncStorage:', selectedValue);
         } catch (error) {
           console.log('Error al guardar en AsyncStorage:', error);
         }
@@ -128,7 +127,6 @@ class DetalleLibro extends Component {
         } else {
           this.setState({ selected: "Sin estado" });
         }
-        console.log('Recuperado de AsyncStorage:', selected);
       } catch (error) {
         console.log('Error al recuperar de AsyncStorage:', error);
       }
