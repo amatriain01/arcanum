@@ -6,9 +6,19 @@ export const librosEstadosLoading = () => ({
     type: ActionTypes.FETCH_LIBROS_ESTADOS_LOADING
 });
 
-export const librosEstadosSuccess = (idsLibros) => ({
-    type: ActionTypes.FETCH_LIBROS_ESTADOS_SUCCESS,
-    payload: idsLibros
+export const librosEstadosSuccessLeyendo = (Leyendo) => ({
+    type: ActionTypes.FETCH_LIBROS_ESTADOS_SUCCESS_LEYENDO,
+    payload: Leyendo
+});
+
+export const librosEstadosSuccessLeido = (Leido) => ({
+    type: ActionTypes.FETCH_LIBROS_ESTADOS_SUCCESS_LEIDO,
+    payload: Leido
+});
+
+export const librosEstadosSuccessPendiente = (Pendiente) => ({
+    type: ActionTypes.FETCH_LIBROS_ESTADOS_SUCCESS_PENDIENTE,
+    payload: Pendiente
 });
 
 export const librosEstadosError = (errMess) => ({
@@ -16,22 +26,56 @@ export const librosEstadosError = (errMess) => ({
     payload: errMess
 });
 
-export const fetchLibrosEstados = (idUsuario, listName) => {
+export const fetchLibrosEstadosLeyendo = (idUsuario) => {
     return async (dispatch) => {
         dispatch(librosEstadosLoading());
 
         try {
-            const librosRef = ref(db, `estados/${idUsuario}/${listName}`);
-            const snapshot = await get(librosRef);
-            if (snapshot.exists()) {
-                const librosData = snapshot.val();
-                const idsLibros = Object.keys(librosData);
-                dispatch(librosEstadosSuccess(idsLibros));
-            } else {
-                dispatch(librosEstadosSuccess([]));
-            }
+            const leyendoRef = ref(db, `estados/${idUsuario}/Leyendo`);
+            const leyendoSnap = await get(leyendoRef);
+            const idsLeyendo = [];
+            leyendoSnap.forEach((child) => {
+                idsLeyendo.push(child.key);
+            });
+            dispatch(librosEstadosSuccessLeyendo(idsLeyendo));
+        } catch (error) {
+            dispatch(librosEstadosError(error.message));
         }
-        catch (error) {
+    }
+}
+
+export const fetchLibrosEstadosLeido = (idUsuario) => {
+    return async (dispatch) => {
+        dispatch(librosEstadosLoading());
+
+        try {
+            const leidoRef = ref(db, `estados/${idUsuario}/Leido`);
+            const leidoSnap = await get(leidoRef);
+            const idsLeido = [];
+            leidoSnap.forEach((child) => {
+                idsLeido.push(child.key);
+            });
+            dispatch(librosEstadosSuccessLeido(idsLeido));
+        } catch (error) {
+            dispatch(librosEstadosError(error.message));
+        }
+    }
+}
+
+
+export const fetchLibrosEstadosPendiente = (idUsuario) => {
+    return async (dispatch) => {
+        dispatch(librosEstadosLoading());
+
+        try {
+            const pendienteRef = ref(db, `estados/${idUsuario}/Pendiente`);
+            const pendienteSnap = await get(pendienteRef);
+            const idsPendiente = [];
+            pendienteSnap.forEach((child) => {
+                idsPendiente.push(child.key);
+            });
+            dispatch(librosEstadosSuccessPendiente(idsPendiente));
+        } catch (error) {
             dispatch(librosEstadosError(error.message));
         }
     }

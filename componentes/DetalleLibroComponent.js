@@ -1,5 +1,3 @@
-import { LogBox } from "react-native";
-LogBox.ignoreLogs(["Warning: ..."]);
 import { Component } from "react";
 import {
   ScrollView,
@@ -34,9 +32,6 @@ const mapStateToProps = (state) => ({
   loadingComentarios: state.comentarios.loading,
   errorComentarios: state.comentarios.errMess,
   valoracionMedia: state.comentarios.valoracionMedia,
-  leido: state.estados.leido,
-  leyendo: state.estados.leyendo,
-  pendiente: state.estados.pendiente,
 });
 
 const mapDispatchToProps = (dispatch) => ({

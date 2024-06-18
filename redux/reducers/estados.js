@@ -1,9 +1,9 @@
 import * as ActionTypes from '../actions/ActionTypes';
 
 const initialState = {
-    leyendo: [],
-    leido: [],
-    pendiente: [],
+    Leyendo: [],
+    Leido: [],
+    Pendiente: [],
     loading: false,
     errMess: null
 };
@@ -42,13 +42,25 @@ export const estados = (state = initialState, action) => {
                 [action.payload.toList]: [...state[action.payload.toList], action.payload.idLibro]
             };
 
-        case ActionTypes.FETCH_LIBROS_ESTADOS_SUCCESS:
+        case ActionTypes.FETCH_LIBROS_ESTADOS_SUCCESS_LEIDO:
             return {
                 ...state,
                 loading: false,
-                leyendo: action.payload.leyendo,
-                leido: action.payload.leido,
-                pendiente: action.payload.pendiente
+                Leido: action.payload.Leido,
+            };
+
+        case ActionTypes.FETCH_LIBROS_ESTADOS_SUCCESS_LEYENDO:
+            return {
+                ...state,
+                loading: false,
+                Leyendo: action.payload.Leyendo,
+            };
+
+        case ActionTypes.FETCH_LIBROS_ESTADOS_SUCCESS_PENDIENTE:
+            return {
+                ...state,
+                loading: false,
+                Pendiente: action.payload.Pendiente,
             };
 
         case ActionTypes.ADD_LIBRO_ESTADOS_ERROR:
